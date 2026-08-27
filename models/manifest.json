@@ -1,0 +1,1098 @@
+{
+ "pieces": [
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneRubble_2m_A",
+   "tris": 2102,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneRubble_2m_B",
+   "tris": 1992,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneRubble_2m_C",
+   "tris": 2046,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneCobble_2m_A",
+   "tris": 4794,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneCobble_2m_B",
+   "tris": 4918,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneAshlar_2m_A",
+   "tris": 1918,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneWindow_2m",
+   "tris": 3120,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneArch_2m",
+   "tris": 2798,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StonePlinth_2m",
+   "tris": 1092,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneArcade_2m_A",
+   "tris": 3018,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneArcade_2m_B",
+   "tris": 3720,
+   "report": []
+  },
+  {
+   "family": "stone_walls",
+   "name": "SM_Wall_StoneArcadePier",
+   "tris": 684,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_2m_A",
+   "tris": 1132,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_2m_B",
+   "tris": 1264,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_2m_C",
+   "tris": 1508,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberWin_2m",
+   "tris": 1188,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberWinLow_2m",
+   "tris": 1432,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberJetty_2m_A",
+   "tris": 1724,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberJetty_2m_B",
+   "tris": 1996,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberGable_2m",
+   "tris": 828,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_2m_A_Rough",
+   "tris": 1540,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_2m_B_Rough",
+   "tris": 1504,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_2m_C_Rough",
+   "tris": 1880,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberWin_2m_Rough",
+   "tris": 1336,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberWinLow_2m_Rough",
+   "tris": 1784,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberJetty_2m_A_Rough",
+   "tris": 2264,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberJetty_2m_B_Rough",
+   "tris": 1984,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberGable_2m_Rough",
+   "tris": 912,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_1m_A",
+   "tris": 1156,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_1m_B",
+   "tris": 1168,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberWinAttic_1m",
+   "tris": 1484,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_Timber_0m5_A",
+   "tris": 724,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberTall_2m_A",
+   "tris": 1132,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberTall_2m_B",
+   "tris": 1272,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberTallWin_2m",
+   "tris": 1452,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberKnee_2m",
+   "tris": 856,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberBand_2m",
+   "tris": 448,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberBandEave_2m",
+   "tris": 676,
+   "report": []
+  },
+  {
+   "family": "timber_walls",
+   "name": "SM_Wall_TimberBandGable_2m",
+   "tris": 688,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_TimberPost_A",
+   "tris": 992,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_TimberPost_B",
+   "tris": 860,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_TimberPost_C",
+   "tris": 1208,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_TimberPost_Tenon_A",
+   "tris": 1120,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_TimberPost_Tenon_B",
+   "tris": 1336,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_ArchBrace",
+   "tris": 332,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_ArchBrace_B",
+   "tris": 332,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_ArchBrace_Pair",
+   "tris": 664,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_StoneQuoin_A",
+   "tris": 1220,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_StoneQuoin_B",
+   "tris": 1220,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_JettyJoint",
+   "tris": 536,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_StoneInner",
+   "tris": 920,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_GalleryBay_2m",
+   "tris": 1726,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_GalleryCorner",
+   "tris": 1866,
+   "report": []
+  },
+  {
+   "family": "corners",
+   "name": "SM_Corner_GalleryStair",
+   "tris": 2686,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Slope_2m_A",
+   "tris": 1986,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Slope_2m_B",
+   "tris": 1980,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Slope_2m_C",
+   "tris": 1968,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Slope_2m_Warm",
+   "tris": 1998,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_SlopeHalf_2m_A",
+   "tris": 1096,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_SlopeHalf_2m_B",
+   "tris": 1098,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_SlopeHalf_2m_C",
+   "tris": 1086,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_SlopeQtr_2m_A",
+   "tris": 494,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_SlopeQtr_2m_B",
+   "tris": 494,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_SlopeQtr_2m_C",
+   "tris": 494,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Slope_1m_A",
+   "tris": 1062,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Slope_1m_B",
+   "tris": 1032,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Slope_1m_C",
+   "tris": 1044,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Eave_2m",
+   "tris": 3826,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Eave_1m",
+   "tris": 2130,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Eave_0m5",
+   "tris": 1190,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Ridge_2m",
+   "tris": 828,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Ridge_1m",
+   "tris": 556,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Ridge_0m5",
+   "tris": 420,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Verge_2m",
+   "tris": 1410,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Hip_1m9",
+   "tris": 548,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Valley_1m9",
+   "tris": 740,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Valley_1m0",
+   "tris": 500,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Valley_0m4",
+   "tris": 340,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Valley_Eave_1m9",
+   "tris": 1384,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_ValleyLaced_1m9",
+   "tris": 1032,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_ValleyLaced_1m0",
+   "tris": 620,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_ValleyLaced_0m4",
+   "tris": 328,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_ValleyLaced_Eave_1m9",
+   "tris": 1268,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Flash_Wall_2m",
+   "tris": 744,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Flash_Step_1m6",
+   "tris": 558,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_RidgeComb_2m",
+   "tris": 1004,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_End_2bay_A",
+   "tris": 3942,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_End_2bay_B",
+   "tris": 3326,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_End_2bay_C",
+   "tris": 3822,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_End_3bay_A",
+   "tris": 5510,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_Barge_2bay",
+   "tris": 4516,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_Barge_3bay",
+   "tris": 5468,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_WinFrame",
+   "tris": 716,
+   "report": []
+  },
+  {
+   "family": "gables",
+   "name": "SM_Gable_Finial",
+   "tris": 744,
+   "report": []
+  },
+  {
+   "family": "dormers",
+   "name": "SM_Dormer_Gabled_1m2_A",
+   "tris": 4718,
+   "report": []
+  },
+  {
+   "family": "dormers",
+   "name": "SM_Dormer_Gabled_1m2_B",
+   "tris": 4710,
+   "report": []
+  },
+  {
+   "family": "dormers",
+   "name": "SM_Dormer_Gabled_1m2_C",
+   "tris": 4686,
+   "report": []
+  },
+  {
+   "family": "dormers",
+   "name": "SM_Dormer_Gabled_1m5",
+   "tris": 4754,
+   "report": []
+  },
+  {
+   "family": "dormers",
+   "name": "SM_Dormer_Shed_1m6",
+   "tris": 2846,
+   "report": []
+  },
+  {
+   "family": "dormers",
+   "name": "SM_Dormer_Cheek_Board",
+   "tris": 196,
+   "report": []
+  },
+  {
+   "family": "dormers",
+   "name": "SM_Dormer_Flash_Valley",
+   "tris": 184,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Stack_1_6m_A",
+   "tris": 1831,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Stack_2_6m_A",
+   "tris": 2837,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Stack_2_6m_B",
+   "tris": 2568,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Stack_2_6m_C",
+   "tris": 2734,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Cap_Roof",
+   "tris": 704,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Cap_Pots",
+   "tris": 548,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Base_Roof",
+   "tris": 1383,
+   "report": []
+  },
+  {
+   "family": "chimneys",
+   "name": "SM_Chimney_Breast_2m",
+   "tris": 1736,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_ArchPlank_1m_A",
+   "tris": 2188,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_ArchPlank_1m_B",
+   "tris": 1628,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_ArchPlank_1m_C",
+   "tris": 2132,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_FlatPlank_1m",
+   "tris": 676,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_CellarDouble_1m",
+   "tris": 2456,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_PorchGable_2m",
+   "tris": 2544,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_ThresholdSteps_2m",
+   "tris": 1056,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_ArchPlank_1m_A_Rough",
+   "tris": 2104,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_ArchPlank_1m_B_Rough",
+   "tris": 1580,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_FlatPlank_1m_Rough",
+   "tris": 612,
+   "report": []
+  },
+  {
+   "family": "doors",
+   "name": "SM_Door_CellarDouble_1m_Rough",
+   "tris": 2360,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_LeadedCasement_A",
+   "tris": 2192,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_LeadedCasement_B",
+   "tris": 1440,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_LeadedCasement_C",
+   "tris": 1876,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_Shuttered",
+   "tris": 2364,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_BayMullion",
+   "tris": 2240,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_ArchStone",
+   "tris": 1424,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_Dormer",
+   "tris": 1484,
+   "report": []
+  },
+  {
+   "family": "windows",
+   "name": "SM_Win_FlowerBox",
+   "tris": 1848,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_JettySoffit_2m",
+   "tris": 604,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_JettyPlate_2m",
+   "tris": 300,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_DragonBeam_Corner",
+   "tris": 548,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_JettySill_2m_A",
+   "tris": 504,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_JettySill_2m_B",
+   "tris": 952,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_JettySill_2m_C",
+   "tris": 768,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_CorbelScroll",
+   "tris": 208,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_CorbelKnee",
+   "tris": 236,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_PorchPost",
+   "tris": 540,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_LintelDoor",
+   "tris": 416,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_TieBeam_4m",
+   "tris": 620,
+   "report": []
+  },
+  {
+   "family": "beams",
+   "name": "SM_Beam_RafterTails_2m",
+   "tris": 956,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Light_WallLantern_A",
+   "tris": 2554,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Light_WallLantern_B",
+   "tris": 2280,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Light_LanternHanging",
+   "tris": 2440,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Sign_WallPanel",
+   "tris": 795,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Sign_NoticeBoard",
+   "tris": 1852,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Sign_InnBoard_A",
+   "tris": 2202,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Sign_InnBoard_B",
+   "tris": 1944,
+   "report": []
+  },
+  {
+   "family": "signage",
+   "name": "SM_Sign_InnBoard_C",
+   "tris": 1072,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Barrel_Large_A",
+   "tris": 1388,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Barrel_Large_B",
+   "tris": 1196,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Barrel_Small_C",
+   "tris": 940,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Barrel_Lying_Large",
+   "tris": 1388,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Barrel_Lying_Small",
+   "tris": 940,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Crate_A",
+   "tris": 1212,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Crate_B",
+   "tris": 1152,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Sacks",
+   "tris": 920,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Ladder",
+   "tris": 516,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Bucket",
+   "tris": 328,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Trough",
+   "tris": 1014,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_WeedTuft_A",
+   "tris": 608,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_WeedTuft_B",
+   "tris": 1024,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_MossPatch",
+   "tris": 1344,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Creeper_2m",
+   "tris": 1424,
+   "report": []
+  },
+  {
+   "family": "props",
+   "name": "SM_Prop_Planter",
+   "tris": 1080,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_Cobble_2m_A",
+   "tris": 2507,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_Cobble_2m_B",
+   "tris": 2578,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_GardenWall_2m",
+   "tris": 3056,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_Fence_2m",
+   "tris": 452,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_Steps_A",
+   "tris": 1113,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_Steps_B",
+   "tris": 768,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_Steps_C",
+   "tris": 2642,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_StepsFlight_2m",
+   "tris": 1909,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_ThresholdSlab",
+   "tris": 396,
+   "report": []
+  },
+  {
+   "family": "ground",
+   "name": "SM_Ground_Well",
+   "tris": 2752,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_Plinth_2m_A",
+   "tris": 302,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_Plinth_2m_B",
+   "tris": 316,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_Corner",
+   "tris": 144,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_CornerInner",
+   "tris": 164,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_Step_2m",
+   "tris": 414,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_Batter_2m",
+   "tris": 330,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_Vent",
+   "tris": 668,
+   "report": []
+  },
+  {
+   "family": "foundations",
+   "name": "SM_Found_Riser_2m",
+   "tris": 272,
+   "report": []
+  }
+ ],
+ "total_tris": 277541,
+ "families_missing": []
+}

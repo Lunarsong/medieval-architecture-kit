@@ -1,0 +1,12 @@
+out/
+renders/
+cmp/
+staging/
+backups/
+refs/
+__pycache__/
+*.pyc
+.DS_Store
+*.blend1
+progress.html
+inn_kit_progress.html
