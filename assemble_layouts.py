@@ -712,6 +712,49 @@ def l_plan():
     # is an OUTSIDE corner post used at a re-entrant, because the corners family
     # has a stone inner corner and no timber one -- see the notes handed back.
     A.put(A.P("SM_Corner_TimberPost_B"), (8.36, 0.12, BASE + HG), 0)
+    # ---- and the PLATE BAND over those two part bays ----------------------
+    # A.storey() drives the band off the SAME bay list as the walls and skips
+    # both for a None bay, so the two bays it skips here -- RG's S bay 7.36 and
+    # WG's W bay -0.64 -- got a hand-laid wall above (the two part() calls) and
+    # no band at all.  Measured in the built file: the range's south band ran
+    # x 0.36..6.36 and the wing's west band y -5.64..-1.64, leaving a hole of
+    #     1.76 x 1.05 m at y = 0.12, x 6.36..8.12, z 6.05..7.10   (range, south)
+    #     1.76 x 2.21 m at x = 8.12, y -1.64..0.12, z 6.05..8.26  (wing,  west)
+    # and the second of those is the ONE place in this building where
+    # M_plaster_dim -- the material on the BACK of every timber panel -- is
+    # visible from outside.  Traced with a ray: from the south-west the sight
+    # line crosses the wing's west plane at (8.12, -1.25, 6.23), i.e. inside
+    # that hole, and its first surface is the inside face of the wing's east
+    # wall 4.2 m further on.  Nothing is in the way; it is a hole, not a leak.
+    #
+    # NOT A.compose_band(): it places FULL 2 m pieces and takes no width.  So
+    # its stack is reproduced here at part width, 1.76 / 2.00 = 0.88, with the
+    # same pieces and the same z scales the neighbouring bays measure --
+    #   RG south  band_h BHR 1.20, non-proud -> 1.20 - BAND_TUCK = 1.05
+    #             -> BandGable 1.00 + 0.05 residue,  z 6.05..7.10, zs 1.05
+    #   WG west   band_h BHW 2.36, non-proud -> 2.36 - BAND_TUCK = 2.21
+    #             -> Knee 1.30,                      z 6.05..7.35, zs 1.00
+    #             -> BandEave 0.85 + 0.06 residue,   z 7.35..8.26, zs 0.91/0.85
+    # NO head plate on either: neither A.storey() call passes band_proud, so
+    # both of storey()'s plate branches are off for these faces and the
+    # neighbouring bays carry none.  A projecting bressumer under an eave is
+    # the fault the note over the wing's north gable describes.
+    ZB = BASE + HG + HU                            # 6.05
+    part("SM_Wall_TimberBandGable_2m", (7.24, 0.12, ZB), 0, 1.76, zs=1.05)
+    part("SM_Wall_TimberKnee_2m", (8.12, -0.76, ZB), -90, 1.76)
+    part("SM_Wall_TimberBandEave_2m", (8.12, -0.76, ZB + 1.30), -90, 1.76,
+         zs=0.91 / 0.85)
+    # NO fourth piece at the arris, and no post over it.  The band's corner
+    # cell (x 8.12..8.36, y -0.12..0.12, T_TIMBER square) is already closed in
+    # plan by the wing's west band bay, which runs to y = 0.12 exactly as the
+    # wall below it does -- the same reason no timber inner-corner piece is
+    # needed at the storey below, and there is none in the kit.  A
+    # SM_Corner_TimberPost here would be dressing only, and it costs: the
+    # storey post at this arris measures 603 and 593 intersecting face pairs
+    # against the two runs it stands between, at 0.15 m -- its own bulge.
+    # Overhead there is no room for a second one either.  The first roof
+    # surface above the arris is the west valley at z 7.94 and the range's own
+    # eave sweep dips to 7.05 at x = 7.60, against a band head of 8.26.
 
     # ---- the two roofs, and the valleys where they meet --------------------
     A.lay_roof(RG)

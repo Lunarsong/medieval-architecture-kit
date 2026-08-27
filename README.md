@@ -31,6 +31,8 @@ all from the pieces above, no new geometry:
 |---|---|
 | ![Market row](images/market-row.jpg) | ![Cottage](images/cottage.jpg) |
 
+![L-plan with a cross wing](images/l-plan.jpg)
+
 ## Detail that survives a close-up
 
 ![Close detail](images/detail.jpg)
@@ -123,13 +125,19 @@ ZFIGHT_TOL=0.0005 blender -b --python check_zfight.py -- roofs     # coincident 
 `check_holes.py` casts from *inside* the building outward: a ray that escapes is a hole you
 could see through. It found one that twelve other checks and a dozen renders had missed.
 
+For the defect it *can't* see — an inside face pointing outward, which is not a hole — swap
+the back-face material for a flat emission colour and render from outside. Anything that
+glows is facing the wrong way. That found the L-plan's inner corner, and cleared the rest of
+the building in the same frame.
+
 Current state of the four buildings:
 
 ```
-inn          731 pieces placed, 0 missing
-layouts      856 pieces placed, 0 missing
-holes        0 escaping rays on the layouts; 24 diffuse (0.33%) on the inn
+inn          743 pieces placed, 0 missing
+layouts      865 pieces placed, 0 missing
+holes        0 escaping rays on the layouts; 4 (0.05%) on the inn
 eave laps    12 pairs, all at 0.0000 m -- seam contact, no interpenetration
+ridge        slope runs 0.127 m UNDER the cap -- a lap, not a gap
 ```
 
 ---
@@ -138,10 +146,6 @@ eave laps    12 pairs, all at 0.0000 m -- seam contact, no interpenetration
 
 Measured, not guessed. These are open:
 
-- **The L-plan's inner corner, upper storey.** The stone storey closes the armpit with two
-  part bays and an inner corner piece; the timber storey above it places none of the three,
-  so at that one corner you see the back face of a wall panel (`M_plaster_dim`). Visible in
-  the L-plan render. The stone storey below it is correct.
 - **`inn_example.glb` loses UVs on 350 of 747 primitives (46.9%).** Blender's glTF exporter
   prunes a UV layer no material references. `inn_kit.glb` is clean — 696 primitives, every
   one with UVs *and* vertex colours — so **use the kit glb for engine work**; the example
@@ -151,6 +155,8 @@ Measured, not guessed. These are open:
   alternative was a 0.179 m open slot along the whole ridge.
 - **No 3.00 m twin of the half-width wall**, so 4 gable fillers still carry a 1.154 height
   stretch.
+- **Six 1–3 px slivers of panel back-face** show on two dormer cheeks and a gable rake.
+  Piece authoring, not placement — the panel is a hair narrower than the frame it sits in.
 - Bargeboards on a cross-wing gable legitimately rise above the roof they cross;
   `check_layouts.py` annotates those rows rather than filtering them.
 

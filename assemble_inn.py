@@ -1657,8 +1657,8 @@ def _blocked_at(a, lo, hi, z52, blk, others, eave=False):
 
 
 def clear_run(c, h, lo, hi, z52, blk, others, n=25, eave=False):
-    """Trim one roof tile to the longest stretch of its length that is NOT inside
-    another mass, returning a new (centre, half-length) or None to drop it.
+    """Trim one roof tile to the stretches of its length that are NOT inside
+    another mass, returning a LIST of (centre, half-length) -- empty to drop it.
 
     `buried()` is all-or-nothing: it only skips a tile when EVERY corner is under
     another roof. A tile that STRADDLES a wall therefore passed the test and was
@@ -1673,26 +1673,59 @@ def clear_run(c, h, lo, hi, z52, blk, others, n=25, eave=False):
     ok = [not _blocked_at(a0 + step * (i + .5), lo, hi, z52, blk, others, eave)
           for i in range(n)]
     if all(ok):
-        return c, h
+        return [(c, h)]
     if not any(ok):
-        return None
-    best = (0, 0, 0)
-    i = 0
+        return []
+    # EVERY clear stretch, not just the longest. This used to keep `best` alone,
+    # which silently threw away roof: the L-plan wing's west eave has two clear
+    # stretches -- 6.16 m and 0.16 m -- and the short one was discarded, leaving
+    # an open wedge at the far end of the run. A bay can be interrupted in the
+    # middle by another mass and be perfectly good on both sides of it.
+    out, i = [], 0
     while i < n:
-        if ok[i]:
-            j = i
-            while j < n and ok[j]:
-                j += 1
-            if j - i > best[0]:
-                best = (j - i, i, j)
-            i = j
-        else:
+        if not ok[i]:
             i += 1
-    _, i, j = best
-    b0, b1 = a0 + i * step, a0 + j * step
-    if b1 - b0 < 0.24:            # a sliver of course reads worse than a clean stop
-        return None
-    return (b0 + b1) / 2, (b1 - b0) / 2
+            continue
+        j = i
+        while j < n and ok[j]:
+            j += 1
+        b0, b1 = a0 + i * step, a0 + j * step
+        if b1 - b0 >= 0.24:      # a sliver of course reads worse than a clean stop
+            out.append(((b0 + b1) / 2, (b1 - b0) / 2))
+        i = j
+    return out
+
+
+def _minus(outer, inner, eps=1e-6):
+    """`outer` minus `inner`, both lists of (centre, half), as (centre, half).
+
+    Used where the EAVE course cannot go but roof surface is still needed. The
+    eave is 1.450 m deep across the slope against a nominal 0.985 m, so its drip
+    can be buried in a neighbouring mass while the course's own upslope half is
+    over a metre clear -- measured 1.589 m clear at one junction. Dropping the
+    whole course there left an open wedge of sky in the roof, with the first
+    slope course starting 0.6 m too far along and the valley courses not
+    reaching in. What belongs there is roof WITHOUT a drip edge, which is
+    exactly a plain slope course.
+    """
+    out = []
+    for cc, hh in outer:
+        pieces = [(cc - hh, cc + hh)]
+        for ic, ih in inner:
+            nxt = []
+            for a, b in pieces:
+                if ic - ih >= b - eps or ic + ih <= a + eps:
+                    nxt.append((a, b))
+                    continue
+                if ic - ih > a + eps:
+                    nxt.append((a, ic - ih))
+                if ic + ih < b - eps:
+                    nxt.append((ic + ih, b))
+            pieces = nxt
+        for a, b in pieces:
+            if b - a >= 0.24:
+                out.append(((a + b) / 2, (b - a) / 2))
+    return out
 
 
 def lay_roof(blk, sides=("lo", "hi")):
@@ -1756,26 +1789,35 @@ def lay_roof(blk, sides=("lo", "hi")):
                                    else (across, a, zz))
                 if k > 0 and buried(pts, others):
                     continue
-                seg = clear_run(c, h, lo, hi, z52, blk, others, eave=(k == 0))
-                if seg is None:
-                    continue
-                c2, h2 = seg
-                if tbl is None:                        # eave: authored widths
-                    for cc, names, csx in compose_run(c2, h2, EAVES_W):
-                        x, y = (cc, lo) if blk.axis == 'X' else (lo, cc)
-                        putr(P(names[0]), (x, y, z52), rz, sx=csx, sy=span)
-                elif tbl is SLOPES_W:                  # full course: 2 m and 1 m
+                segs = clear_run(c, h, lo, hi, z52, blk, others, eave=(k == 0))
+                plain = []
+                if k == 0:
+                    # Where the EAVE cannot go but a plain course can, lay the
+                    # plain course rather than nothing. See _minus().
+                    plain = _minus(clear_run(c, h, lo, hi, z52, blk, others),
+                                   segs)
+                for c2, h2 in segs:
+                    if tbl is None:                    # eave: authored widths
+                        for cc, names, csx in compose_run(c2, h2, EAVES_W):
+                            x, y = (cc, lo) if blk.axis == 'X' else (lo, cc)
+                            putr(P(names[0]), (x, y, z52), rz, sx=csx, sy=span)
+                    elif tbl is SLOPES_W:              # full course: 2 m and 1 m
+                        for cc, names, csx in compose_run(c2, h2, SLOPES_W):
+                            x, y = (cc, lo) if blk.axis == 'X' else (lo, cc)
+                            putr(P(vpick(names, x, y)), (x, y, z52), rz,
+                                 sx=csx, sy=span)
+                    else:
+                        # Part-panels are authored at 2 m only, so a part-BAY
+                        # still takes sx here. That squashes the tab, not the
+                        # course gauge, and only on the panel the cap laps.
+                        x, y = (c2, lo) if blk.axis == 'X' else (lo, c2)
+                        putr(P(vpick(tbl, x, y)), (x, y, z52), rz,
+                             sx=2.0 * h2 / G, sy=ssy)
+                for c2, h2 in plain:
                     for cc, names, csx in compose_run(c2, h2, SLOPES_W):
                         x, y = (cc, lo) if blk.axis == 'X' else (lo, cc)
                         putr(P(vpick(names, x, y)), (x, y, z52), rz,
                              sx=csx, sy=span)
-                else:
-                    # Part-panels are authored at 2 m only, so a part-BAY still
-                    # takes sx here. That squashes the tab, not the course gauge,
-                    # and only on the panel the ridge cap laps.
-                    x, y = (c2, lo) if blk.axis == 'X' else (lo, c2)
-                    putr(P(vpick(tbl, x, y)), (x, y, z52), rz,
-                         sx=2.0 * h2 / G, sy=ssy)
 
 
 def lay_ridge(blk):
