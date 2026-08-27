@@ -37,6 +37,12 @@ all from the pieces above, no new geometry:
 
 ![Close detail](images/detail.jpg)
 
+Where the range's roof meets the taller cross wing, the two eave lines sit **0.80 m apart**
+— deliberately. The wing's datum has to stand above the range's or its roof planes never
+cross the range's, and there is no valley line to lay:
+
+![The two-eave junction](images/junction.jpg)
+
 ![Aerial](images/inn-aerial.jpg)
 
 ---
