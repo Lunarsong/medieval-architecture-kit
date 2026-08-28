@@ -121,6 +121,20 @@ def world(top=(0.35, 0.50, 0.78), bottom=(0.55, 0.52, 0.48), strength=1.0,
 
 
 def sun(energy=3.0, angle_deg=(52, 0, 34), softness=2.5, color=(1.0, 0.94, 0.84)):
+    """ONE key sun, replacing any existing one.
+
+    This used to call lights.new() unconditionally and never remove the previous
+    object, so every invocation added another sun -- which made `sun(energy=0)` a
+    no-op in any scene that already had one, and turned three separate "sun off"
+    control renders on this project into sunlit renders presented as controls.
+
+    area() is deliberately NOT given the same treatment: look_ref1 places two
+    independent fills and assemble_layouts' street look places six, and
+    collapsing them to one reinstates a documented lighting fault.
+    """
+    for _o in list(bpy.data.objects):
+        if _o.type == 'LIGHT' and _o.data.type == 'SUN':
+            bpy.data.objects.remove(_o, do_unlink=True)
     l = bpy.data.lights.new("KeySun", 'SUN')
     l.energy = energy
     l.angle = radians(softness)
@@ -147,16 +161,6 @@ def ground(size=60, color="stone_dark", z=-0.02):
     ground pieces (cobbles, thresholds, steps) sit at z=0, and a backdrop at exactly
     z=0 z-fights them into a flickering near-black mess.
     """
-    # ONE key sun. This used to call lights.new() unconditionally, so every
-    # invocation added another sun and none of them removed the last -- which
-    # made `sun(energy=0)` a no-op in any scene that already had one, and turned
-    # three separate "sun off" control renders on this project into sunlit
-    # renders presented as controls. area() is deliberately NOT given the same
-    # treatment: assemble_layouts' street look places six independent fills and
-    # collapsing them to one regressed a documented lighting fault.
-    for _o in list(bpy.data.objects):
-        if _o.type == 'LIGHT' and _o.data.type == 'SUN':
-            bpy.data.objects.remove(_o, do_unlink=True)
     me = bpy.data.meshes.new("Ground")
     h = size / 2
     me.from_pydata([(-h, -h, z), (h, -h, z), (h, h, z), (-h, h, z)], [], [(0, 1, 2, 3)])
@@ -336,7 +340,17 @@ def look_ref1():
     #     Khronos PBR     -0.40   p95 219   >230 2.96%   gap 39.3   (too hot)
     # High Contrast at -1.00 puts the median within 5 of the painting's, restores
     # the highlights, and widens the roof-against-sky separation by half again.
-    _set_look('High Contrast')
+    # AgX BASE LOOK, not High Contrast. Measured on the hero frame against the
+    # reference crop: High Contrast at exposure -0.72 put 19.9% of BUILDING pixels
+    # below L=10 against the reference's 0.01% -- every stud, brace, bargeboard and
+    # the whole west gable end reading as a black shape with no material in it --
+    # and clipped 3.4% of the frame above L230 where the reference clips 0.045%.
+    # Dropping it holds the mean (0.4241 -> 0.4271), halves the crushed blacks
+    # (10.02% -> 5.33% of frame, 10.27% -> 7.67% on the shadowed gable crop) and
+    # clips nothing. look_ref2 never called this and lands within 2 levels of ITS
+    # own reference's p95, so the control was already in the repo.
+    # To restore it: _set_look('High Contrast').
+    _set_look('None')
     # Re-measured on the real pipeline once AgX was ACTUALLY being applied
     # (painting: median 55, p95 205, 2.18% over 230):
     #     High Contrast  -1.00  med 60  p95 158  >230 0.14%

@@ -169,9 +169,18 @@ Measured, not guessed. These are open:
   `SM_Roof_Flash_Wall_2m` and `SM_Dormer_Flash_Valley` are placed **zero** times against 8
   stacks and 5 dormer cheeks across the four buildings. One stack shows a hard horizontal cut
   at its foot.
-- **The porch canopy is laid flat.** `SM_Roof_Slope_2m_B.009/.010` are the only roof pieces
-  placed without the Z-stretch: 8.672 of 8.862 m² sit below 5°, so a steep-deck shingle relief
-  reads as horizontal shelves — at eye level over the front door.
+- **The porch canopy is nearly flat, and it shows.** `SM_Roof_Slope_2m_B.009/.010` are the
+  only roof pieces placed without the Z-stretch. Rotating a panel whose geometry already rakes
+  leaves a dominant plane of **10.56°**, not the 38° the rotation suggests, with shingle faces
+  at **1.56° from horizontal** and 26% of the surface area horizontal outright. Measured from
+  a standing eye at 1.70 m in the street, the top surface is plainly visible and reads as a
+  flat mat with none of the shingle relief the rest of the roof shows — and water would not
+  run off it. It is the most-looked-at 8.9 m² on the building.
+
+  ![The porch canopy from a standing eye](images/porch.jpg)
+
+  The fix is a design choice, not a mechanic: steepen the canopy, or author a shallow-pitch
+  awning panel whose relief is drawn for that pitch.
 - **36 part-panels at the ridge carry a 0.667 vertical scale.** The last 1–2 shingle courses
   of a slope, compressed on a 3-course panel that the ridge cap laps. Deliberate: the
   alternative was a 0.179 m open slot along the whole ridge.
