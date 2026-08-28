@@ -236,8 +236,10 @@ STEPZ = S.SLOPE_SEG * S.SIN_P            # 1.26065   vertical, 52 world
 # matters for the same reason -- ours is 20.7 x 14.2 m against the painting's
 # 18.3 x 12.9, so a shingle, a barrel and a window all read at nearly the same
 # fraction of the building as they do in the picture.
-PITCH_F = 65.0
-TANF = tan(radians(PITCH_F))             # 2.14451
+# ONE source of truth: the presented pitch now lives in the spec, so a PIECE can
+# read the pitch it is going to be placed at. See kit/spec.py PITCH_F_DEG.
+PITCH_F = S.PITCH_F_DEG
+TANF = S.TAN_F                           # 2.14451
 ZK = TANF / TANP                         # 1.67548   the roof-world Z stretch
 # SM_Roof_Eave_2m is 1.450 m deep across the slope against STEPY = 0.985 m of
 # nominal tile footprint: the swept bell-cast projects 0.465 m further downslope
@@ -819,13 +821,19 @@ def put(piece, at, rz=0.0, rx=0.0, scale=None, mx=False):
     return o
 
 
-def putr(piece, at52, rz=0.0, sx=1.0, sy=1.0):
+def putr(piece, at52, rz=0.0, sx=1.0, sy=1.0, mx=False):
     """Place a ROOF-WORLD piece: z arrives in the 52 deg world and is stretched
     to 68.  sx scales along the piece's own tiling axis (part-length panels,
     mirrored rakes); sy scales the piece's depth AND its height together, which
-    keeps it on the same roof plane -- see the header."""
+    keeps it on the same roof plane -- see the header.
+
+    `mx` passes through to put()'s MESH mirror ('X' | 'Y' | 'XY'), which a
+    junction piece needs: a side abutment has two hands, and a negative object
+    scale would invert the winding and ship that defect into glTF. Note that for
+    a piece whose courses LAP up the slope, mirroring the slope axis reverses the
+    lap -- use a 180 deg rz for that and mirror only across the wall plane."""
     return put(piece, (at52[0], at52[1], at52[2] * ZK), rz,
-               scale=(sx, sy, sy * ZK))
+               scale=(sx, sy, sy * ZK), mx=mx)
 
 
 def rot2(v, deg):
@@ -1820,6 +1828,63 @@ def lay_roof(blk, sides=("lo", "hi")):
                              sx=csx, sy=span)
 
 
+# ---- side abutments -------------------------------------------------------
+# The stop end's own length along the ridge, and the eave dentil pitch it is cut
+# to: DENT_P = 1.786 / 9. NOTE the comment at the dentil pitch below says 0.19788
+# and that number is wrong -- it is 0.198444, measured off the boxes eave() lays
+# (9 teeth, all 8 gaps exactly 0.198444).
+EST_L = 0.198444
+FLASH_EAVE = "SM_Roof_Flash_StepEave_0m6"
+EAVE_STOP = "SM_Roof_Eave_StopEnd"
+
+
+def lay_abutments():
+    """Close the four side abutments where MAIN's eave dies into HERO's flanks.
+
+    Shanee, on the junction: "The 2 roof lines / eaves are different heights. Is
+    that intentional? I think it's fine but I wonder if we need any special pieces
+    in some cases to make it look more natural." The step IS intentional -- HERO's
+    datum has to stand above MAIN's or their roof planes never cross and there is
+    no valley line to lay -- but the pieces were missing. Two things read wrong at
+    that corner: MAIN's shingle courses butted straight into HERO's plaster with no
+    soaker, and MAIN's eave fascia and dentil course stopped dead against it,
+    showing a cut end with a dentil overhanging nothing.
+
+    THE ABUTMENT IS 1.100 m OF HEIGHT, NOT 0.800. The 0.800 figure is
+    datum-to-datum; a flashing starts at the eave ANCHOR, which sits
+    EAVE_OVER * tan(PITCH) = 0.300 m world below its own datum. In flat courses
+    that is 4.923 to HERO's eave anchor and 6.771 to its roof plane -- but what
+    fixes the length at FIVE courses is what still fits: the cover carries
+    FS_UP = 0.155 of upstand, so nrow 6 drives its top step 0.152 m THROUGH
+    HERO's roof, and nrow 4 leaves 0.22 m of open joint at the most visible
+    corner in the building.
+
+    It could not be the existing flat SM_Roof_Flash_Step_1m6 shortened: the
+    bell-cast displaces the eave's surface up to SWEEP = 0.22 along the slope
+    normal, so a flat lead would sit 0.065 m UNDER the shingles it covers for its
+    first 3.5 courses. Hence a separately authored swept piece.
+
+    Both pieces share ONE origin -- the eave course's own anchor at the wall
+    plane, exactly what lay_roof hands putr for the k = 0 course -- and both are
+    built on the same swept surface, so there is nothing to offset.
+
+    HAND. The pieces are authored wall-body-+X, roof-falling-away-in-minus-X.
+    Mirroring in X gives the other flank. The NORTH slope additionally needs
+    rz = 180, because its up-slope direction is reversed and these courses LAP
+    up the slope -- and since rz = 180 also flips X, the mirror flips with it.
+    """
+    need = MAIN.slope_steps
+    z52 = MAIN.r52 - need * STEPZ
+    for sgn, rz in ((-1.0, 0.0), (1.0, 180.0)):
+        across = MAIN.ridge_pos + sgn * need * STEPY
+        for x, east in ((HERO.tb[0], False), (HERO.tb[2], True)):
+            mx = east
+            if rz:
+                mx = not mx
+            for nm in (FLASH_EAVE, EAVE_STOP):
+                putr(P(nm), (x, across, z52), rz, mx=('X' if mx else False))
+
+
 def lay_ridge(blk):
     others = [b for b in ALL if b is not blk]
     for c, sx in spans(*blk.run):
@@ -2283,6 +2348,7 @@ def build_inn():
     # is the gap fixed above.
     gable(HERO, 'N', win=False)
     cross_valleys(MAIN, HERO)
+    lay_abutments()
     # -0.95 -> -0.52. At -0.95 the dormer spanned y -1.93..0.03 against the hero's
     # south gable at -2.03..-1.64, so 0.29 m of it sat inside the gable and poked
     # through. Shanee: "SM_Dormer_Shed_1m6.002 needs to be moved a little on the y
@@ -2584,14 +2650,40 @@ if __name__ == "__main__":
     # the only setting that emits COLOR_0 at all for this node pattern, and the colour
     # variation IS the kit's look.
     _glb = os.path.join(ROOT, "out", "inn_example.glb")
+    # use_visible=True, and it is not cosmetic. finalize() is handed `reps`,
+    # which EXCLUDES the hidden `_library` collection -- correct, because
+    # unwrapping 743 objects instead of 102 is wasted work. But the exporter's
+    # own `use_visible` defaults to FALSE, so it shipped all 182 hidden library
+    # pieces anyway: 92 of 194 mesh datablocks with no UV layer at all (the
+    # "exporter prunes unreferenced UVs" theory was wrong), 278,027 stray tris
+    # (+26%), and 182 pieces stacked at the world origin -- a duplicate
+    # staircase, gallery balustrade and porch canopy jutting out of the front
+    # facade, with 76 street-level rays' worth lying outside the building
+    # silhouette entirely. Measured with the keyword: 407 primitives, 0 without
+    # TEXCOORD_0, 0 without COLOR_0, 751 nodes = exactly the placed count, and
+    # 25.1 MB -> 17.1 MB.
     _kw = dict(filepath=_glb, export_format='GLB', export_apply=True,
                export_yup=True, export_materials='EXPORT',
                export_texcoords=True, export_normals=True,
-               export_all_vertex_colors=True)
+               export_all_vertex_colors=True, use_visible=True)
     try:
         bpy.ops.export_scene.gltf(**_kw)
-    except TypeError:
-        bpy.ops.export_scene.gltf(filepath=_glb, export_format='GLB')
+    except TypeError as _e:
+        # The old fallback re-exported with ONLY filepath and format, which
+        # silently dropped export_all_vertex_colors and with it every COLOR_0 --
+        # and the colour variation IS this kit's look. Drop one keyword at a
+        # time and say which, rather than throwing the whole dict away.
+        print("GLTF WARNING: export rejected a keyword (%s); retrying" % _e)
+        for _k in ('use_visible', 'export_all_vertex_colors'):
+            _kw.pop(_k, None)
+            try:
+                bpy.ops.export_scene.gltf(**_kw)
+                print("GLTF WARNING: exported WITHOUT %s" % _k)
+                break
+            except TypeError:
+                continue
+        else:
+            raise
     print("SAVED", _glb)
     R.hero_ref1(objs, os.path.join(ROOT, "renders", "inn", "inn_ref1.png"))
     R.clear_stage()

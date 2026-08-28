@@ -158,6 +158,31 @@ FLASHING, STEP (SM_Roof_Flash_Step_1m6): the SIDE abutment, where the fall line
     apron's: it tiles UP THE SLOPE at slope_vec(1). Mirror in X for the other
     hand. The two flashings are not interchangeable and neither covers the
     other's condition.
+FLASHING, STEP AT AN EAVE (SM_Roof_Flash_StepEave_0m6): the SAME abutment where
+    it starts at an EAVE instead of at a panel boundary -- the bottom of a
+    cross-wing junction. Same frame as the step flashing above, and its origin is
+    the EAVE COURSE'S OWN ANCHOR at the wall face, so the assembler places it at
+    the point it already places SM_Roof_Eave_2m at, moved along the run to the
+    wall plane. It is built on the EAVE'S SURFACE, _Surf(sweep=S.SWEEP), NOT on
+    the nominal plane: the bell-cast puts the eave's shingles up to SWEEP = 0.22
+    out along the slope normal at the drip, which is deeper than the whole
+    BUILD + FS_UP = 0.218 of a flat flashing, so the flat piece would be buried
+    there. 5 courses, arc 0.643399 (s 0.570560), at the EAVE's arc gauge
+    0.128680 -- 13 courses per SLOPE_SEG, the same count as the field's, over a
+    swept surface that is 1.672839 long instead of 1.600. The lowest course sits
+    at arc 0 (head at 1*ra, butt hanging 0.45*ra below the origin), exactly the
+    eave's own first course. It does NOT hand over to the flat step flashing at
+    its own top: that one has to be laid at s = SLOPE_SEG from the same origin or
+    its 0.123077 gauge drifts 0.044825 out of step with the panel above by the
+    segment boundary. Mirror in X for the other hand.
+EAVE STOP END (SM_Roof_Eave_StopEnd): closes the END GRAIN of an eave run that
+    terminates against a wall. The eave has no return of its own and cannot: its
+    cap bead is (wx, .100, .052) centred on x = 0, i.e. exactly on both tiling
+    seams, so finish() planes its bevel off. Same frame and SAME ORIGIN as the
+    eave step flashing above, so one placement point serves both. One dentil
+    pitch long (EST_L = DENT_P = 0.198444) and reaching x -0.2144..-0.0050
+    measured; the eave run's last outer X seam must land EST_L short of the wall
+    face, and the piece laps back over it. Mirror in X for the other hand.
 
 HALF AND QUARTER TILES: every fraction in this family is AUTHORED, and the
     up-slope ones are whole COURSE COUNTS rather than 0.5 and 0.25 -- see the
@@ -2850,6 +2875,319 @@ def flash_step(nrow=N_SEG, nm=None):
     return p.finish()
 
 
+# ---------------------------- 6c. the EAVE'S side abutment, and its stop end --
+# WHY THERE ARE TWO MORE PIECES HERE, AND WHY THE 13-COURSE STEP FLASHING IS NOT
+# EITHER OF THEM.
+#
+# Shanee, on a close-up of the inn's cross-wing junction: "There is a hole/gap in
+# the roof ... The 2 roof lines / eaves are different heights. Is that
+# intentional? I think it's fine but I wonder if we need any special pieces in
+# some cases to make it look more natural."
+#
+# The step IS intentional -- assemble_inn's range datum is 8.80 + BASE and its
+# cross wing's is 9.60 + BASE, and a wing datum BELOW the range's would drop the
+# wing's eave clear of the range's roof and leave no valley line to lay at all.
+# What was missing is the two pieces that close the junction the step makes.
+# Measured on the assembled inn (52 deg world, i.e. before putr's ZK stretch):
+#
+#   range eave anchor   z52 5.341639   world  8.9498
+#   wing  eave anchor   z52 5.819116   world  9.7498     <- the 0.800 m step
+#   wing roof plane at the wing's own wall face (its datum / ZK)
+#                       z52 5.998308   world 10.0500
+#
+# so THE ABUTMENT IS 1.100 m OF WORLD HEIGHT, NOT 0.800. The extra 0.300 is the
+# eave's own drop below its datum, EAVE_OVER * tan P = 0.179192 in the 52 world
+# -- the number eave()'s docstring already states -- because a flashing starts at
+# the eave's ANCHOR and the anchor is not the datum. Measured three ways, in
+# courses (flat gauge, one course rises ROW_S*sin P = 0.096986):
+#
+#   up to the wing's eave anchor  0.477477  ->  4.92 courses
+#   up to the wing's eave TRIM    0.485477  ->  5.01 courses   <- the visible joint
+#   up to the wing's roof plane   0.656669  ->  6.77 courses   <- the whole joint
+#
+# and the count that actually decides it is neither of the first two: it is what
+# still FITS. The cover flashing carries FS_UP = 0.155 of upstand above the roof
+# surface, so the top of the lead at nrow courses sits at surface + 0.041 + 0.155:
+#
+#   nrow = 4   top 0.54458                       0.112 clear of the wing's plane
+#   nrow = 5   top 0.64598                       0.011 clear                <- ok
+#   nrow = 6   top 0.74738     0.091 THROUGH the wing's roof plane, 0.152 world
+#
+# So nrow = 5. Four leaves 0.22 m of world height of open joint at the most
+# visible corner on the building; six pushes the top step of the cover 0.152 m
+# out through the wing's roof. Five stops 0.060 m of world height short of the
+# wing's fascia bottom with the CUT COURSES and covers all of it with the LEAD,
+# which is what a step flashing is for, and its upstand runs 0.037 m under the
+# wing's own roof boarding, which is what an upstand is for.
+#
+# AND IT CANNOT BE THE FLAT PIECE SHORTENED. SM_Roof_Flash_Step_1m6 is built on
+# FLAT. This abutment starts at an EAVE, and the bottom SWEEP_LEN = 0.38 of an
+# eave is displaced up to SWEEP = 0.22 out along the slope normal by the
+# bell-cast (see _Surf.d): at s = 0 the eave's own shingle surface stands
+# 0.22 + BUILD = 0.283 out of the nominal plane while a flat flashing's cover
+# tops out at BUILD + FS_UP = 0.218, so the flat piece would be BURIED -- its
+# lead 0.065 UNDER the shingles it is meant to cover, and its first 3.5 courses
+# (arc 0.4528 of sweep / ra) inside the roof. So this piece is built on the
+# EAVE'S OWN SURFACE, _Surf(sweep=S.SWEEP), and takes the eave's own arc gauge:
+#
+#   slope panel / flat flash_step   13 courses over s = 1.600     ra 0.123077
+#   swept eave / this piece         13 courses over arc 1.672839  ra 0.128680
+#
+# Thirteen courses per SLOPE_SEG in both, which is what makes them lock together;
+# the arc gauge is larger only because the swept surface is longer than the
+# chord. 5 * 0.128680 = 0.643399 of arc, s = 0.570560 -- hence the 0_m6 in the
+# name. That is exactly the eave course's own courses 1..5.
+#
+# The pattern is the family's own: valley() has valley_eave(), valley_laced() has
+# valley_laced_eave(), and the eave version is its OWN function rather than a
+# branch, because the surface, the gauge and the reach down-slope all change.
+ES_DOWN  = -0.09     # how far DOWN-SLOPE, in ARC, the upstand and soakers run
+                     # past the piece origin. The eave's lowest field course
+                     # butts at arc -0.45*ra = -0.0579 (local y -0.2312); at the
+                     # flat piece's -0.05 the upstand stopped 0.008 SHORT of it
+                     # and left the drip course's own joint open. -0.09 reaches
+                     # 0.032 past it. The eave's TRIM runs further still, to
+                     # local y -0.4189, and is closed by the stop end below, not
+                     # by lead.
+ES_SLAB  = -0.13     # ... and the boarding, one course further out again
+ES_NSEC  = 6         # sections in the swept boarding and the swept upstand. The
+                     # flat piece uses a 2-point prism, which on a curved surface
+                     # is a chord: it would sag 0.03 below the sweep at mid-span
+                     # and take the upstand's effective height with it.
+
+
+def flash_step_eave(nrow=5, nm=None):
+    """STEP FLASHING for the SIDE ABUTMENT AT AN EAVE -- the bottom of the
+    junction where a range's roof dies into the flank of a cross wing standing
+    one eave-step higher. Read the block above for the measurement that fixes
+    nrow at 5 and for why the flat SM_Roof_Flash_Step_1m6 cannot serve here.
+
+    FRAME -- identical to SM_Roof_Flash_Step_1m6's, so the two stack up the same
+    wall, and identical to SM_Roof_Eave_StopEnd's, so the assembler places this
+    piece and the stop end at ONE point:
+      * wall face on X = 0, wall body +X, roof falls away in -X;
+      * origin ON THE NOMINAL 52 deg SLOPE at the wall face, at the EAVE COURSE'S
+        OWN ANCHOR -- the same (x, y, z52) the assembler already places
+        SM_Roof_Eave_2m at, offset only along the run to the wall plane. The
+        piece's own surface is the eave's, so it starts 0.220 out along the slope
+        normal from that origin exactly as the eave course does (surface point at
+        s = 0 is local y -0.17336, z +0.13545), and nothing has to be moved to
+        meet the bell-cast;
+      * climbs +Y by SLOPE_SEG*cos P and +Z by SLOPE_SEG*sin P, so it tiles up
+        the slope at slope_vec(1) -- but it is NOT a tiling piece: it is the
+        first 5 courses of a run, and it does not hand over to the flat piece at
+        its own top. WHERE THE FLAT PIECE GOES, if the wall above wants one at
+        all (this junction's does not -- see below): at s = SLOPE_SEG exactly,
+        i.e. slope_vec(1) from this origin, so its own 0.123077 gauge lands on
+        the slope panel's. Laid directly on this piece's top instead, at
+        s = 0.570560, its eighth course head falls 0.044825 short of the segment
+        boundary and every course line above it is out of step with the panel;
+      * mirror in X for the other hand (putr's `mx='X'` -- a mesh mirror, not a
+        negative scale, because a negative scale would invert the winding).
+
+    HOW FAR UP THE SLOPE THE LOWEST COURSE SITS, since it starts at an eave and
+    not at a panel boundary: at zero. The lowest cut course's HEAD is at arc
+    1*ra = 0.128680 and its butt hangs 0.45*ra = 0.0579 of arc BELOW the origin,
+    which is the eave course's own first course to the millimetre -- _field
+    places courses by head at k*ra for k = 1..n on both pieces. The lead runs
+    further out than the shingles do (ES_DOWN, ES_SLAB) so nothing is open at the
+    drip.
+
+    WHAT IT TILES BY: nothing along the ridge -- it is a one-off at a wall, and
+    nothing up the slope either, at the junction it was measured for. Above
+    nrow = 5 courses the top of its cover is already at local z 0.64598 against
+    the wing's roof plane at the wall face at 0.656669 -- 0.011 short, 0.018 in
+    world z -- so the lead covers the whole joint even though the cut courses
+    stop 0.060 m of world height below the wing's fascia bottom. What is left
+    above it (courses 6 and 7, to the valley foot at 7.04 courses / local z
+    0.656669) sits INSIDE the wing's eave soffit, above the wing's drip line and
+    behind its 0.42 m of overhang. SM_Roof_Flash_Step_1m6 is for a wall that goes
+    higher than that -- a chimney cheek, or a bigger eave step.
+
+    Four layers, all indexed on the eave's own courses: cut courses laid by
+    _field on the eave's surface at the eave's arc gauge 0.128680; one lapping
+    lead soaker per course, alternately 5.5 mm prouder so two lapping sheets
+    never share a plane; a continuous upstand turned up the wall FS_UP off the
+    surface; and the cover cut in steps, one per course, whose tread and rise are
+    the eave's own -- so near the drip the staircase flattens with the bell-cast
+    instead of climbing at 52 deg through it."""
+    sf = _Surf(sweep=S.SWEEP)
+    # THE EAVE'S OWN GAUGE, derived by eave()'s own line rather than assumed.
+    ra = (sf.arc(L) - sf.arc(0.0)) / max(1, int(round(sf.arc(L) / ROW)))
+    span = nrow * ra                        # in ARC along the swept surface
+    s_top = sf.s_at(span)
+    # Seams tightened onto what the piece MEASURES (x -0.4001..-0.0008,
+    # y -0.3034..0.3968, z 0.0790..0.6854), not onto a slack bound: nothing may
+    # cross x = 0, the wall face, and the y bound is what proves this piece does
+    # not deepen any eave's plan footprint (the eave itself reaches y -0.4189, so
+    # the assembler's EAVE_PROJ = 0.465 still guards the drip and is unchanged).
+    p = _Part(nm or "SM_Roof_Flash_StepEave_0m6", budget="roof",
+              seams=dict(x=(-.42, .01), y=(-.32, .42), z=(.06, .71)))
+    r = rng(p.name)
+    # boarding, so the joint is never open to daylight -- and following the
+    # sweep, not chording it (see ES_NSEC)
+    _slab(p, sf, -.40, -.004, sf.s_at(ES_SLAB), s_top + .01, -SLAB, .002,
+          n=ES_NSEC)
+    # ---- soakers: one per course, lapping, alternately proud ---------------
+    for k in range(nrow):
+        _put(p, sf, -FS_TONG * .5 - .008, sf.s_at((k + .5) * ra), LIFT - .004
+             + (k % 2) * .0055, (FS_TONG, 1.7 * ra, FS_LEADT), LEAD, bevel=0,
+             tint=.04, shade=.30)
+    # ---- the cut courses on the eave's own surface -------------------------
+    _field(p, sf, -FS_CUT[1], -FS_CUT[0], 0.0, s_top, seed="stepeave", t0=.004)
+    # ---- the upstand, turned up the wall, following the sweep --------------
+    ss = [lerp(ES_DOWN, span + .05, i / (ES_NSEC - 1.0)) for i in range(ES_NSEC)]
+    base = [sf.pt(sf.s_at(a), BUILD + .004) for a in ss]
+    poly = base + [(y, z + FS_UP) for (y, z) in base[::-1]]
+    p.prism(poly, FS_LEADT, LEAD, axis='X', at=(-.0075, 0, 0), bevel=0,
+            tint=.04, shade=.34)
+    # ---- the cover, cut in steps that follow the courses -------------------
+    for k in range(nrow):
+        yb, zb = sf.pt(sf.s_at((k + 1) * ra), BUILD + .004)
+        y0 = sf.pt(sf.s_at(k * ra), BUILD + .004)[0] - .55 * ra * COSP
+        p.box((FS_COVX - (k % 2) * .004, (y0 + yb) * .5,
+               zb + FS_UP - FS_COVH * .5), (.014, yb - y0, FS_COVH), LEAD,
+              bevel=0, tint=.04, shade=.46 + r.uniform(-.04, .04))
+    p.wobble(.005, freq=1.8)
+    return p.finish()
+
+
+# ------------------------------- 6d. the eave's STOP END against a wall ------
+# THE SECOND HALF OF THE SAME JUNCTION, AND IT IS NOT A FLASHING. Shanee, same
+# render: "the range's eave fascia and its dentil course stop dead against the
+# plaster: you can see the cut end of the fascia, and a dentil overhanging
+# nothing."
+#
+# MEASURED FIRST, because "the eave already has a return and the assembler is
+# cutting through it" was the answer that would have made this piece wrong. It
+# does not. eave() lays its cap bead at (wx, .100, .052) centred on x = 0 --
+# x = -1.000 .. +1.000 at wx = G, i.e. EXACTLY ON BOTH TILING SEAMS -- so
+# finish()'s clamp_to_seams planes its bevel off and leaves a flat sawn face
+# there; the fascia plank at (wx - .020, .075, .117) ends 0.016 / 0.004 inside
+# the seams and keeps a 0.012 bevel, which is a chamfer, not a return. Neither
+# could be otherwise: a return on a piece that tiles at GRID would stand in the
+# middle of the next bay's fascia. So the return has to be its own piece.
+#
+# The dentil course needs no separate treatment beyond that, and this is also
+# measured: _lattice returns ten teeth at wx = G, -0.902 .. +0.884, but the
+# +0.884 one falls 0.084 from the rafter tail at +0.8 and eave() drops anything
+# inside 0.085 -- so NINE teeth are emitted, from -0.902 to +0.685556, and the
+# last tooth already stands 0.314 clear of the +X seam. Nothing overhangs the
+# seam. What the render shows is simply the course STOPPING, with nothing to stop
+# against. So this piece is a stop end, not a trimmed dentil: one dentil bay of
+# solid block where the last tooth would have been, closing the whole band.
+#
+# The reference supports exactly that. r6's lean-to (crop at 3.5x, its shingle
+# gauge as the scale bar) dies into the main range's wall, and its eave plate
+# does not run out into the air: it stops against a VERTICAL STOP MEMBER standing
+# proud of the plate, with the shingle course ends dying into the stepped
+# soakers above it. Two members, one dark and proud, the pale bead running over
+# the top of both to the wall -- which is what this builds.
+#
+# EST_L IS ONE DENTIL PITCH. The stop end is DENT_P = 0.198444 long along the
+# ridge, so it replaces exactly one tooth bay: the dentil rhythm is not
+# interrupted, it is terminated. It also means the assembler has ONE number to
+# honour -- run the eave to one dentil pitch short of the wall face.
+EST_L    = DENT_P          # 0.198444 -- one dentil bay
+EST_LAP  = 0.006           # how far it laps -X over the run's cut end faces, so
+                           # the two are never coplanar
+# THE EAVE'S OWN TRIM SECTION, and these are eave()'s literals, not numbers of
+# our own: (s, t, along-slope, out-of-roof). IF eave() MOVES ITS TRIM, MOVE
+# THESE. The stop end reproduces the section it closes -- that is the whole
+# requirement -- and it stands EST_PR proud of it so the two are never coplanar
+# and the 0.004 x gap between them is covered.
+EST_CAP  = (-0.062,  0.028, 0.100, 0.052)     # cap bead,  oak_pale
+EST_FAS  = (-0.055, -0.013, 0.075, 0.117)     # fascia,    oak_dark
+EST_DEN  = (-0.054, -0.079, 0.098, 0.075)     # dentil,    oak_dark
+EST_PR   = 0.011           # how far the dark stop block stands proud of the
+                           # fascia/dentil band it closes
+EST_BEAD = 0.035           # thickness, along the ridge, of the vertical stop
+                           # bead at the wall -- the member r6's lean-to plate
+                           # dies into. Proud of the block again, so its own
+                           # faces are 0.008-0.016 off every other face in the
+                           # piece and check_zfight has nothing to pair.
+
+
+def eave_stop(nm=None):
+    """FASCIA / DENTIL STOP END: closes the end grain of an eave run that
+    terminates against a wall. Three members, all at eave()'s own (s, t) so the
+    profile is continuous through the joint:
+
+      * a dark STOP BLOCK spanning the fascia-plus-dentil band (s -0.114..+0.006,
+        t -0.1275..+0.0505 -- the union of eave()'s fascia and dentil sections
+        grown EST_PR proud), one dentil bay long;
+      * a dark vertical STOP BEAD at the wall, EST_BEAD thick and prouder again,
+        which is the member the band actually dies into;
+      * the pale CAP BEAD carried over both to the wall, at eave()'s own
+        (s -0.062, t +0.028) and section (0.100 x 0.052), so the light line along
+        the top of the eave runs unbroken into the stop instead of stopping one
+        bay early.
+
+    FRAME -- the eave's, and the SAME ORIGIN as SM_Roof_Flash_StepEave_0m6:
+    wall face on X = 0, wall body +X, the eave run lying in -X, origin on the
+    nominal 52 deg slope at the eave anchor. Built on the eave's own swept
+    surface, so its members land on the eave's trim line and not on the nominal
+    plane 0.22 below it. Occupies x -0.2144 .. -0.0050 measured: NOTHING crosses
+    the wall face and nothing reaches +X. Mirror in X for the other hand -- it is
+    symmetric about no plane, so the mirror is a real mesh mirror.
+
+    WHAT THE ASSEMBLER MUST HONOUR: the eave run's last piece's outer X seam has
+    to land EST_L = 0.198444 short of the wall face. The piece laps EST_LAP
+    = 0.006 back over that seam (the pale cap bead 0.016), so a run ending
+    anywhere in the last 6 mm of it still closes; further short than that and the
+    gap is the run's, not the stop's. WHAT IS NOT CLOSED, measured: eave() drops
+    its own +0.884 tooth (it falls 0.084 from the rafter tail at +0.8 and the rule
+    drops anything inside 0.085), so at the +X hand the last tooth's edge stands
+    0.2744 in from the seam and the band runs 0.2744 of bare fascia before the
+    stop block picks it up; at the -X hand it is 0.058. That is eave()'s own
+    lattice, not this piece's -- the fix would be its 0.085 rafter-tail threshold,
+    which exists to stop a tooth landing inside a tail, so it is left alone.
+
+    IT DOES NOT CHANGE ANY EAVE'S PLAN DEPTH. Its own y range is inside the
+    eave's -0.4189..+1.0306, so EAVE_PROJ = 0.465 in the assembler still guards
+    the drip and needs no new number."""
+    sf = _Surf(sweep=S.SWEEP)
+    # Seams tightened onto the measured extents: x -0.2144..-0.0050,
+    # y -0.3460..-0.1867, z  0.0017..0.1920. The y bound is the one that matters
+    # to the assembler -- it sits WELL INSIDE the eave's own -0.4189, so no eave's
+    # plan depth changes and EAVE_PROJ = 0.465 needs no new number.
+    p = _Part(nm or "SM_Roof_Eave_StopEnd", budget="roof",
+              seams=dict(x=(-.23, .01), y=(-.36, -.15), z=(-.03, .21)))
+    r = rng(p.name)
+    x1 = -(EST_L + EST_LAP)                       # the lap end, over the run
+    # ... and the pale bead laps 0.010 DEEPER than the dark block does. Not
+    # cosmetic: at one shared x1 the block's and the bead's -X faces were the same
+    # plane and check_zfight scored 26 cm2 of it. Lapping the pale line further
+    # back also closes the 0.004 x gap between this piece and the run's own cap
+    # bead, which ends exactly on its outer seam.
+    # ---- the dark stop block: the fascia + dentil band, grown proud --------
+    fs0, fs1 = EST_FAS[0] - EST_FAS[2] * .5, EST_FAS[0] + EST_FAS[2] * .5
+    ds0, ds1 = EST_DEN[0] - EST_DEN[2] * .5, EST_DEN[0] + EST_DEN[2] * .5
+    b_s0, b_s1 = min(fs0, ds0) - EST_PR, max(fs1, ds1) + EST_PR
+    b_t0 = EST_DEN[1] - EST_DEN[3] * .5 - EST_PR
+    b_t1 = EST_FAS[1] + EST_FAS[3] * .5 + .005    # only 5 mm at the top: the
+    # flashing's upstand base sits at BUILD + 0.004 = 0.0672 and the pale bead
+    # runs over this face anyway, so there is nothing to gain up there and
+    # 0.0167 of clearance to keep.
+    _put(p, sf, (x1 - .012) * .5, (b_s0 + b_s1) * .5, (b_t0 + b_t1) * .5,
+         (-.012 - x1, b_s1 - b_s0, b_t1 - b_t0), "oak_dark",
+         bevel=.012, seg=1, tint=.05, shade=.80 + r.uniform(-.04, .04))
+    # ---- the vertical stop bead at the wall --------------------------------
+    # 0.016 proud of the block DOWN-SLOPE, where it is seen, and 0.004 INSIDE it
+    # top and bottom, so the block still sets the silhouette and every face of
+    # the bead is >= 4 mm off every face of the block -- 8x ZFIGHT_TOL.
+    _put(p, sf, -.005 - EST_BEAD * .5, (b_s0 + b_s1) * .5 - .008,
+         (b_t0 + b_t1) * .5,
+         (EST_BEAD, b_s1 - b_s0 + .032, b_t1 - b_t0 - .008), "oak_dark",
+         bevel=.010, seg=1, tint=.06, shade=.92 + r.uniform(-.04, .04))
+    # ---- the pale cap bead, carried over both to the wall ------------------
+    xp = x1 - .010
+    _put(p, sf, (xp - .008) * .5, EST_CAP[0], EST_CAP[1] - .002,
+         (-.008 - xp, EST_CAP[2] + .020, EST_CAP[3] + .014), "oak_pale",
+         bevel=.014, seg=2, tint=.05, shade=1.06)
+    p.wobble(.006, freq=1.4)
+    return p.finish()
+
 # ------------------------------------------------------------------ build ----
 def build():
     """The family. THE FRACTIONAL PIECES ARE NOT SCALED COPIES -- read the
@@ -2869,7 +3207,14 @@ def build():
       ValleyLaced_1m0/_0m4  the full piece's own courses 1..7 and 1..3.
       Flash_Step_1m6        NOT a fraction -- the SIDE-ABUTMENT condition the
                             family did not have. Flash_Wall is an apron and can
-                            only close a joint that runs ACROSS the fall."""
+                            only close a joint that runs ACROSS the fall.
+      Flash_StepEave_0m6    the same abutment AT THE EAVE: 5 courses on the
+                            eave's own swept surface at the eave's own arc gauge
+                            0.128680, arc 0.643399. Not the flat piece shortened
+                            -- the bell-cast would bury it. See 6c.
+      Eave_StopEnd          closes the end grain of an eave run that dies into a
+                            wall, one dentil pitch (0.198444) long, at eave()'s
+                            own fascia / dentil / cap-bead section. See 6d."""
     out = [slope("A"), slope("B"), slope("C"), slope("Warm")]
     for v in ("A", "B", "C"):
         out.append(slope(v, nrow=SLOPE_HALF_N, nm=f"SM_Roof_SlopeHalf_2m_{v}"))
@@ -2891,7 +3236,8 @@ def build():
             valley_laced(),
             valley_laced(VAL_HALF_N, "SM_Roof_ValleyLaced_1m0"),
             valley_laced(VAL_QTR_N, "SM_Roof_ValleyLaced_0m4"),
-            valley_laced_eave(), flashing(), flash_step()]
+            valley_laced_eave(), flashing(), flash_step(),
+            flash_step_eave(), eave_stop()]
     return out
 
 

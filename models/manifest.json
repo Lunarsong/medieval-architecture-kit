@@ -511,6 +511,18 @@
    "report": []
   },
   {
+   "family": "roofs",
+   "name": "SM_Roof_Flash_StepEave_0m6",
+   "tris": 290,
+   "report": []
+  },
+  {
+   "family": "roofs",
+   "name": "SM_Roof_Eave_StopEnd",
+   "tris": 196,
+   "report": []
+  },
+  {
    "family": "gables",
    "name": "SM_Gable_RidgeComb_2m",
    "tris": 1004,
@@ -567,37 +579,37 @@
   {
    "family": "dormers",
    "name": "SM_Dormer_Gabled_1m2_A",
-   "tris": 4718,
+   "tris": 4326,
    "report": []
   },
   {
    "family": "dormers",
    "name": "SM_Dormer_Gabled_1m2_B",
-   "tris": 4710,
+   "tris": 4318,
    "report": []
   },
   {
    "family": "dormers",
    "name": "SM_Dormer_Gabled_1m2_C",
-   "tris": 4686,
+   "tris": 4294,
    "report": []
   },
   {
    "family": "dormers",
    "name": "SM_Dormer_Gabled_1m5",
-   "tris": 4754,
+   "tris": 4362,
    "report": []
   },
   {
    "family": "dormers",
    "name": "SM_Dormer_Shed_1m6",
-   "tris": 2846,
+   "tris": 2296,
    "report": []
   },
   {
    "family": "dormers",
    "name": "SM_Dormer_Cheek_Board",
-   "tris": 196,
+   "tris": 208,
    "report": []
   },
   {
@@ -1093,6 +1105,6 @@
    "report": []
   }
  ],
- "total_tris": 277541,
+ "total_tris": 275921,
  "families_missing": []
 }

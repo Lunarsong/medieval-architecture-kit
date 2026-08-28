@@ -40,6 +40,21 @@ PLANE_SNAP = 0.10   # see below
 # LAPS the rake, so a few centimetres is correct. Judge by DEPTH -- a lapping barge reads
 # ~0.05 m, a barge standing proud of its verge or floating off the eave reads > 0.5 m.
 THROUGH = ('Wall', 'Beam', 'Corner', 'Gable')
+# 'Dormer' DELIBERATELY ABSENT, and this is not the "a family absent from here is
+# never tested" blind spot -- it is the opposite mistake, and I made it.
+#
+# A dormer EMERGES through the roof surface by design: it is planted in a slope,
+# so every vertex of it has roof below and nothing above, which is exactly what
+# this test looks for. Adding 'Dormer' duly reported all six placed dormers at a
+# depth of 3.270 m -- and reported the identical 3.270 m before and after a fix
+# that measurably shortened them by 0.506 m. The number is the dormer's height
+# above the field, not its over-run, so it cannot discriminate and it drowns the
+# real rows in noise.
+#
+# THE GATE FOR A DORMER OVER-RUNNING THE RIDGE is its placed world extent along
+# the slope axis against the ridge piece's far face: SM_Dormer_Gabled_1m5 went
+# 2.9701 -> 2.4639 against a far face of 2.5468 and a ridge centre-line of
+# 2.3600. Measure that, not this.
 
 
 def fam(n):

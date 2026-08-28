@@ -5,7 +5,8 @@
 
 Writes: renders/<family>/lineup.png, tiled.png, closeup.png, demo.png
         out/<family>.blend
-Prints: a JSON report (per piece: tris + validation errors). NON-EMPTY "report"
+Prints: a JSON report (per piece: tris, validation errors, and any CLAMP note).
+        NON-EMPTY "report"
         FIELDS ARE FAILURES -- fix them, don't ignore them.
 """
 import bpy, sys, os, json, importlib, traceback
@@ -40,7 +41,18 @@ for o in objs:
     report["total_tris"] += t
     if errs:
         report["fails"] += 1
+    # SURFACE kit_clamped. util.finish() sets it and PRINTS a CLAMP line, and
+    # separates it from failures on purpose -- cutting a stone's relief flat where
+    # it crosses a bay seam is exactly how tiling works, while the same mechanism
+    # deforming a dormer roof by 0.1 m is a bug. But it was never in this report,
+    # so a reader (me, repeatedly) could quote "every piece reports EMPTY" while 37
+    # pieces across the kit were silently crushing vertices, worst 0.402 m. It
+    # still does not flip `fails`; it is now at least COUNTABLE.
     row = {"name": o.name, "tris": t, "report": errs}
+    _cl = o.get("kit_clamped") or ""
+    if _cl:
+        row["clamped"] = _cl
+        report["clamped"] = report.get("clamped", 0) + 1
     cl = o.get("kit_clamped")
     if cl:
         # not a failure -- but if this number is large on an axis your piece is not

@@ -298,10 +298,19 @@ def dormer_run(blk, sgn, poss, s=1.0, inb=0.95, nm=None, flower=True):
     zd = (blk.ridge - (abs(across - blk.ridge_pos) - A.D_YWALL * s) * A.TANF
           - A.D_ZROOF * s)
     rz = blk.rz(sgn)
-    for u in poss:
+    # STEP THE INDEX, do not hash the position. A.vpick() hashes (u, zd) into a
+    # 4-entry table, and a 4-entry table picked by hash lands on one entry about
+    # one run in sixteen: the market row's three dormers all came out
+    # SM_Dormer_Gabled_1m5 -- one shared mesh datablock, same scale, same flower
+    # box -- and the L-plan's two both came out _1m2_C. The user reported exactly
+    # this class on the inn ("Dormers were literally the same object three
+    # times") and assemble_inn.py was fixed to step the index; dormer_run never
+    # was, and it has collided on both buildings that place more than one.
+    off = int(abs(across) * 7 + abs(poss[0] if poss else 0) * 3) % len(A.DORMERS)
+    for i, u in enumerate(poss):
         x, y = (u, across) if blk.axis == 'X' else (across, u)
-        A.put(A.P(nm or A.vpick(A.DORMERS, u, zd)), (x, y, zd), rz,
-              scale=(s, s, s))
+        A.put(A.P(nm or A.DORMERS[(off + i) % len(A.DORMERS)]),
+              (x, y, zd), rz, scale=(s, s, s))
         if flower:
             A.put(A.P("SM_Win_FlowerBox"), (x, y, zd + 0.26 * s), rz,
                   scale=(s, s, s))

@@ -4,7 +4,7 @@ A **modular half-timber building kit**, generated procedurally in Blender. Every
 Python function on a shared 2 m grid, so the parts snap together into different buildings
 rather than making one fixed model.
 
-**182 pieces · 14 families · 277k triangles · 4 example buildings**
+**184 pieces · 14 families · 276k triangles · 4 example buildings**
 
 ![The inn](images/inn.jpg)
 
@@ -50,7 +50,7 @@ cross the range's, and there is no valley line to lay:
 ## Open it
 
 ```
-models/inn_kit.blend       the library -- all 182 pieces, browsable, laid out by family
+models/inn_kit.blend       the library -- all 184 pieces, browsable, laid out by family
 models/inn_kit.glb         the same, portable (Unity, Unreal, Godot, three.js, Maya)
 models/inn_example.blend   the inn, assembled
 models/inn_example.glb     the same, portable
@@ -139,12 +139,20 @@ the building in the same frame.
 Current state of the four buildings:
 
 ```
-inn          743 pieces placed, 0 missing
+inn          751 pieces placed, 0 missing
 layouts      865 pieces placed, 0 missing
-holes        0 escaping rays on the layouts; 4 (0.05%) on the inn
+holes        0 escaping rays on the layouts; 4 (0.05%) on the inn, all at the
+             foundation course, no visible gap
 eave laps    12 pairs, all at 0.0000 m -- seam contact, no interpenetration
 ridge        slope runs 0.127 m UNDER the cap -- a lap, not a gap
+glTF         both .glb clean: every primitive carries UVs and COLOR_0
 ```
+
+`build_piece.py` also reports a `clamped` count per family. A clamp is where a piece's
+relief is cut flat at a seam — which is how tiling is *supposed* to work for a stone wall
+(12 of 12 clamp by design) and a bug when it deforms a roof. It is deliberately separate
+from `fails`, and it is now printed, because it was possible to quote "every piece reports
+EMPTY" while 37 pieces across the kit were silently crushing vertices.
 
 ---
 
@@ -152,10 +160,18 @@ ridge        slope runs 0.127 m UNDER the cap -- a lap, not a gap
 
 Measured, not guessed. These are open:
 
-- **`inn_example.glb` loses UVs on 350 of 747 primitives (46.9%).** Blender's glTF exporter
-  prunes a UV layer no material references. `inn_kit.glb` is clean — 696 primitives, every
-  one with UVs *and* vertex colours — so **use the kit glb for engine work**; the example
-  glb is for looking at.
+- **Six 1–3 px pale slivers** show on two dormer cheeks at oblique angles. Measured: they are
+  not back faces at all — every pixel is a *front* face, the window's backing plate seen
+  through its own jamb past a 72 mm unlined void behind the glazing frame, which opens at 31°
+  off the face normal. The fix is two lines in `Part.glazing`, but it adds 562 cm² of
+  near-coplanar surface to `SM_Gable_WinFrame`, so it is not landed until that is resolved.
+- **Chimney feet have no base and no flashing.** `SM_Chimney_Base_Roof`,
+  `SM_Roof_Flash_Wall_2m` and `SM_Dormer_Flash_Valley` are placed **zero** times against 8
+  stacks and 5 dormer cheeks across the four buildings. One stack shows a hard horizontal cut
+  at its foot.
+- **The porch canopy is laid flat.** `SM_Roof_Slope_2m_B.009/.010` are the only roof pieces
+  placed without the Z-stretch: 8.672 of 8.862 m² sit below 5°, so a steep-deck shingle relief
+  reads as horizontal shelves — at eye level over the front door.
 - **36 part-panels at the ridge carry a 0.667 vertical scale.** The last 1–2 shingle courses
   of a slope, compressed on a 3-course panel that the ridge cap laps. Deliberate: the
   alternative was a 0.179 m open slot along the whole ridge.

@@ -38,7 +38,7 @@ FLOOR / PROP / DOOR / WINDOW pieces:
 
 ===============================================================================
 """
-from math import radians, cos, sin
+from math import radians, cos, sin, tan
 
 # ---------------------------------------------------------------- grid ------
 GRID        = 2.0     # module width. Every wall / roof bay is this wide.
@@ -58,6 +58,22 @@ JETTY       = 0.45    # upper storey overhang beyond the storey below (ref: both
 # ---------------------------------------------------------------- roof ------
 PITCH_DEG   = 52.0    # ONE pitch for the whole kit. Non-negotiable: it is what
 PITCH       = radians(PITCH_DEG)   # lets every roof piece meet every other one.
+# THE PITCH THE ROOF IS PRESENTED AT, as distinct from the one it is AUTHORED at.
+# Every roof piece is drawn at PITCH_DEG so any piece meets any other; the
+# assembler then stretches the whole roof world in Z by
+#   ZK = tan(PITCH_F) / tan(PITCH)
+# placing each piece at z*ZK with scale (s, s, s*ZK), which leaves every seam
+# meeting because a plane through a point scaled that way is unchanged.
+# This constant lived in assemble_inn.py, which meant a PIECE could not read the
+# pitch it was going to be placed at -- and a piece that is deliberately NOT
+# stretched (a dormer) has to cut its back against the FIELD's pitch, not its
+# own. Cutting for 52 when the field is 65 made the dormer 0.463 m too long and
+# burst it through the main ridge on 10 of 11 placed instances.
+# DO NOT "simplify" this to one pitch: PITCH_DEG is read for SIN_P/COS_P by
+# roofs, ground, doors and the assembler, and they must all keep authoring at 52.
+PITCH_F_DEG = 65.0
+PITCH_F     = radians(PITCH_F_DEG)
+TAN_F       = tan(PITCH_F)
 SLOPE_SEG   = 1.6     # roof panel length measured along the slope
 EAVE_OVER   = 0.14    # horizontal overhang of eave past the wall face.
                       # 0.55 -> 0.14, measured. At the kit's 52 deg pitch every metre

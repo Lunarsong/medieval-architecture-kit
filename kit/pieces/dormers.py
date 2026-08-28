@@ -138,7 +138,22 @@ G = S.GRID
 HB = G / 2.0
 
 # main roof, and this family's own steeper gable
-TAN_R = S.SIN_P / S.COS_P                      # 52 deg field pitch
+# THE FIELD'S PITCH AS PRESENTED, NOT AS AUTHORED. This was S.SIN_P / S.COS_P --
+# tan(52) = 1.27994 -- and its own comment called it "field pitch", which is what
+# every one of the 22 uses below means: where the dormer's ridge dies into the
+# field, where its cheeks meet it, the valley line, the cheek slab's raking foot.
+# But the field a dormer is PLACED on is stretched to PITCH_F = 65 by the
+# assembler (ZK = 1.67548), and a dormer is deliberately placed UNSTRETCHED, at
+# uniform scale, with its z already derived from TANF. Cutting the piece for 52
+# while planting it in a 65 field made it 0.463 m too long in y and burst it
+# through the main ridge on 10 of 11 placed instances, on two buildings -- rake
+# boards and an apex block ending in mid-air over the far slope.
+#
+# It is the DEFINITION that was wrong, not the call sites. Patching only the
+# ridge back-cut (line 1038) leaves the other 21 sites cutting for 52 and crushes
+# 173 vertices flat onto the box seam, which kit/util.check() reports as clean.
+# The dormer's OWN roof pitch is DORMER_PITCH / TAN_D and is untouched.
+TAN_R = S.TAN_F                                # 65 deg: the field AS PLACED
 DORMER_PITCH = radians(61.0)
 COS_D, SIN_D, TAN_D = cos(DORMER_PITCH), sin(DORMER_PITCH), tan(DORMER_PITCH)
 SHED_PITCH = radians(22.0)
@@ -2017,8 +2032,18 @@ def cheek():
     the declared z bound. Both faults are one fault: the declared shape and the
     declared bound did not describe the real piece.
     """
-    L, TOP = 0.66, 0.60
-    z_top = TOP + L * TAN_S                     # 0.867 -- the back of the wedge
+    # L IS DERIVED, NOT TUNED. The docstring above records this piece being fixed
+    # once already for precisely this fault -- and it was fixed against a 52 deg
+    # field. TAN_R is now the field AS PLACED (65 deg), where a 0.66 m run climbs
+    # 1.390 against a wedge top of 0.867, so the quad inverted a second time and
+    # finish() crushed 10 verts by 0.423 m. Tying L to the pitch stops it
+    # happening at a third value: hold MARGIN of head between the raking foot at
+    # L * TAN_R and the wedge top at TOP + L * TAN_S, and solve for L. At 65 deg
+    # that gives 0.299 -- which is also the right order for the dormer's own run
+    # against a steeper field, since d_roof shrinks by the same 1/TAN_R.
+    TOP, MARGIN = 0.60, 0.08
+    L = (TOP - MARGIN) / (TAN_R - TAN_S)
+    z_top = TOP + L * TAN_S                     # the back of the wedge
     p = _Part("SM_Dormer_Cheek_Board", budget="dormer",
              seams=dict(x=(-.06, .34), y=(0, L), z=(0, z_top + .10)))
     r = rng(p.name)

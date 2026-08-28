@@ -147,6 +147,16 @@ def ground(size=60, color="stone_dark", z=-0.02):
     ground pieces (cobbles, thresholds, steps) sit at z=0, and a backdrop at exactly
     z=0 z-fights them into a flickering near-black mess.
     """
+    # ONE key sun. This used to call lights.new() unconditionally, so every
+    # invocation added another sun and none of them removed the last -- which
+    # made `sun(energy=0)` a no-op in any scene that already had one, and turned
+    # three separate "sun off" control renders on this project into sunlit
+    # renders presented as controls. area() is deliberately NOT given the same
+    # treatment: assemble_layouts' street look places six independent fills and
+    # collapsing them to one regressed a documented lighting fault.
+    for _o in list(bpy.data.objects):
+        if _o.type == 'LIGHT' and _o.data.type == 'SUN':
+            bpy.data.objects.remove(_o, do_unlink=True)
     me = bpy.data.meshes.new("Ground")
     h = size / 2
     me.from_pydata([(-h, -h, z), (h, -h, z), (h, h, z), (-h, h, z)], [], [(0, 1, 2, 3)])
@@ -244,6 +254,14 @@ def look_ref1():
     Matches fantasy_inn.jpg. The ambient is deliberately LOW: the painting's
     stone base is a dark mass and its jetty throws a real shadow band, and a
     bright sky fill is what flattened round 1 into one even value."""
+    # clear_stage FIRST. sun() and area() call bpy.data.lights.new on every
+    # invocation and never remove the previous object, so lights ACCUMULATE:
+    # a caller that set this look and then asked for sun(energy=0) got
+    # "KeySun 22.0 W" sitting next to "KeySun.001 0.0 W", and its "sun off"
+    # control render came back 56.5% bit-identical to the lit one. That voided
+    # the control in three separate investigations on this project, including
+    # one of mine that I reported to the user as evidence.
+    clear_stage()
     engine(eevee=True, samples=96, res=(1440, 810))
     # sky_gain, measured. The ambient stays at 0.40 -- it is deliberately low and
     # raising it flattens the shadow side -- but the BACKDROP the camera sees is
@@ -344,6 +362,14 @@ def look_ref2():
     DARKER picture than it looks: its median value is L=114 and its roof L=71.
     Ambient dropped and the sun tightened so the eaves, the jetty and the
     dormer cheeks all carry a shadow instead of reading as flat paint."""
+    # clear_stage FIRST. sun() and area() call bpy.data.lights.new on every
+    # invocation and never remove the previous object, so lights ACCUMULATE:
+    # a caller that set this look and then asked for sun(energy=0) got
+    # "KeySun 22.0 W" sitting next to "KeySun.001 0.0 W", and its "sun off"
+    # control render came back 56.5% bit-identical to the lit one. That voided
+    # the control in three separate investigations on this project, including
+    # one of mine that I reported to the user as evidence.
+    clear_stage()
     engine(eevee=True, samples=96, res=(1500, 1060))
     world(top=(0.54, 0.54, 0.53), bottom=(0.40, 0.40, 0.39), strength=0.66)
     sun(energy=15.0, angle_deg=(53, 0, 30), softness=3.2, color=(1.0, 0.96, 0.90))
