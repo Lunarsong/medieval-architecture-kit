@@ -148,6 +148,9 @@ ridge        slope runs 0.127 m UNDER the cap -- a lap, not a gap
 glTF         both .glb clean: every primitive carries UVs and COLOR_0
 porch        shingle faces moved from a 0-10 deg cluster (39% of area) to
              20-30 deg (46%) -- the same structure as the main roof's 60-70
+chimneys     all 8 stacks on their own haunch; the shaft-against-roof cut line
+             measured 2,280 px before and 0 after, and its loose-stone fringe
+             10,801 px before and 0 after
 ```
 
 `build_piece.py` also reports a `clamped` count per family. A clamp is where a piece's
@@ -167,10 +170,14 @@ Measured, not guessed. These are open:
   through its own jamb past a 72 mm unlined void behind the glazing frame, which opens at 31°
   off the face normal. The fix is two lines in `Part.glazing`, but it adds 562 cm² of
   near-coplanar surface to `SM_Gable_WinFrame`, so it is not landed until that is resolved.
-- **Chimney feet have no base and no flashing.** `SM_Chimney_Base_Roof`,
-  `SM_Roof_Flash_Wall_2m` and `SM_Dormer_Flash_Valley` are placed **zero** times against 8
-  stacks and 5 dormer cheeks across the four buildings. One stack shows a hard horizontal cut
-  at its foot.
+- **`Blk.zsurf()` returns the NOMINAL roof plane, not the shingle surface.** Measured over 17
+  raycasts, the skin stands **0.091–0.190 m in z above it** (0.038–0.080 perpendicular). The
+  chimney haunch now compensates with its own `ROOF_SKIN`, but anything else bedded on
+  `zsurf()` — dormers, moss drifts — is buried 38–80 mm deeper than intended. That is the safe
+  direction (buried, not floating), which is why it is here and not in the fix list.
+- **`SM_Chimney_Cap_Roof`, `SM_Roof_Flash_Wall_2m` and `SM_Dormer_Flash_Valley` are still
+  placed zero times.** The first is an alternative to the pots the buildings use; the other two
+  are for conditions the four example buildings do not have.
 - Bargeboards on a cross-wing gable legitimately rise above the roof they cross;
   `check_layouts.py` annotates those rows rather than filtering them.
 

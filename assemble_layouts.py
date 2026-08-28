@@ -455,8 +455,8 @@ def market_row():
     dormer_run(B, -1, DORM_X)
     # chimneys clear of every dormer in x -- 1.10 sits between the west gable
     # and the first dormer, 14.36 between the last dormer and the gallery
-    A.chimney(1.10, B.ridge_pos, B.ridge - 1.50, 1.05, "C")
-    A.chimney(14.36, B.ridge_pos, B.ridge - 1.55, 0.95, "A")
+    A.chimney(B, 1.10, 1.05, "C")
+    A.chimney(B, 14.36, 0.95, "A")
     for sgn, along, up, n, sc, sd in ((-1, .22, .07, 16, .95, 1),
                                       (-1, .70, .10, 14, .88, 2),
                                       (1, .45, .08, 14, .92, 3)):
@@ -589,7 +589,7 @@ def cottage():
     A.gable(B, 'W', var="C", win=False)
     A.gable(B, 'E', var="A")
     dormer_run(B, -1, [3.36], s=0.72, inb=0.25)
-    A.chimney(0.90, B.ridge_pos, B.ridge - 1.30, 0.80, "A")
+    A.chimney(B, 0.90, 0.80, "A")
     A.roof_drift(B, -1, 0.30, 0.10, n=10, sc=0.80, spread=(1.0, .34), seed=1)
 
     # a doorstep, a water butt and five minutes of yard.  The flight is 1.04 m
@@ -777,8 +777,8 @@ def l_plan():
     # WEST of the valley only: the wing's west eave line is x = 7.40, so a 2 m
     # dormer on the bay at 7.36 is cut in half by it
     dormer_run(RG, -1, [1.36, 5.36])
-    A.chimney(3.36, RG.ridge_pos, RG.ridge - 1.50, 1.05, "B")
-    A.chimney(WG.ridge_pos, -4.20, WG.ridge - 1.55, 1.15, "C")
+    A.chimney(RG, 3.36, 1.05, "B")
+    A.chimney(WG, -4.20, 1.15, "C")
     A.roof_drift(RG, -1, 0.30, 0.09, n=14, sc=0.90, spread=(1.4, .40), seed=1)
     A.roof_drift(RG, 1, 0.62, 0.12, n=12, sc=0.86, spread=(1.4, .40), seed=2)
     A.roof_drift(WG, -1, 0.22, 0.08, n=14, sc=0.92, spread=(1.4, .40), seed=3)

@@ -291,12 +291,14 @@ the breast alike: one quarry, one mason.
     daylight (and smoke) through the gap under it.
   * ref1's cap is the other classic: two corbelled courses that oversail the
     shaft, with squat terracotta pots bedded in dark flaunching on top.
-  * Where a stack pierces the roof it FLARES out, and at 52 deg the intersection
-    spans over 1.5m vertically -- the down-slope side shows the whole diagonal,
-    the up-slope side only a ~0.3m sliver of shoulder above the shingles. That
-    flare is `Base_Roof`, and it is what stops a chimney looking pasted on.
+  * Where a stack pierces the roof it FLARES out, and at the field's 65 deg the
+    intersection spans 2.34 m vertically (1.09 m of shaft depth x tan65) -- the
+    down-slope side shows the whole diagonal, the up-slope side only a sliver of
+    shoulder above the shingles. That flare is `Base_Roof`, and it is what stops
+    a chimney looking pasted on. IT IS ALSO THE FLASHING: there is no separate
+    chimney flashing piece in the kit, the haunch's lead skirt is it.
 
-PLACEMENT
+PLACEMENT  --  THE CONTRACT AN ASSEMBLER HAS TO KEEP
   Stacks / caps / base: origin at the footprint centre (prop convention), Z=0 at
       the bottom. The core footprint is W (0.96) square on every piece, and no
       stack module carries a collar at its top, so modules butt into one
@@ -306,14 +308,47 @@ PLACEMENT
       The stack axis is X=0, Y=0, so the toe sits BASE_TOE down-slope of the axis
       and the back of the haunch BASE_UP up-slope of it (the wedge is deliberately
       lopsided: a haunch throws its bulk down the slope). Its stepped underside
-      follows the 52 deg roof plane, so drop it until the toe touches the roof
-      surface -- for a stack axis at (x, y): z = z_roof(y - BASE_TOE). Seat for a
-      stack module on top at Z=BASE_H, on the axis.
+      follows the FIELD roof plane -- 65 deg, S.PITCH_F, not the kit's authored
+      52 -- so drop it until the toe touches the SHINGLE SURFACE:
+
+          y_axis = ridge_pos - BASE_UP            (the wedge's back on the ridge)
+          toe_z  = ridge_z - Z_ROOF + ROOF_SKIN   (== ridge_z - TOE_DROP)
+          place("SM_Chimney_Base_Roof",   (x, y_axis, toe_z))
+          place("SM_Chimney_Stack_2_6m_A",(x, y_axis, toe_z + BASE_H), z=kz)
+          place("SM_Chimney_Cap_*",       (x, y_axis, toe_z + BASE_H + 2.60*kz))
+
+      Generally (a stack anywhere on a slope, not just under a ridge):
+          toe_z = zsurf(y_axis - BASE_TOE) + ROOF_SKIN
+      where zsurf is the NOMINAL field plane ridge_z - |dy|*tan65 and ROOF_SKIN
+      is how far roofs.py's shingle skin stands above it (measured, see below).
+      +Y is up-slope, so a chimney on the other slope of the same ridge is the
+      same piece at rz=180 with y_axis = ridge_pos + BASE_UP.
+      DO NOT BURY THE STACK. With the haunch placed the stack's foot sits
+      BASE_H above the toe, i.e. 1.48 m clear of the roof surface at its own
+      axis; burying it (assemble_inn.chimney's old "foot ~1 m under the ridge")
+      is what the haunch replaces.
+      THE RIDGE CAP DOES NOT NEED SUPPRESSING, and this was checked rather than
+      assumed. With the axis at ridge_pos - BASE_UP the cornice reaches only
+      y = ridge_pos - 0.42, clear of SM_Roof_Ridge_2m's y band (ridge_pos +- 0.19),
+      and the stack's foot seats at 0.086 m above the cap's top -- so the cap
+      passes BEHIND the chimney and reads as the ridge continuing, which is
+      right. It does interpenetrate the wedge's topmost buried step (y
+      ridge_pos-0.19 .. ridge_pos, z below the shoulder): solid inside solid,
+      nothing visible. Do NOT move the axis further down-slope to avoid that --
+      at ridge_pos - BASE_UP - 0.16 the whole chimney drops 0.34 m and the ridge
+      cap comes out through the SHAFT.
+      Known and left open: from a viewpoint above and behind the ridge you can
+      see 159 px of sky through the void under the cornice's oversailing corner
+      (measured, 1200x900). That void is what an oversail is, it was there at
+      52 deg too, and closing it means widening the wedge to the cornice's full
+      width, i.e. losing the oversail.
   Breast: an add-on, not a wall piece. Its BACK plane is Y=0 -- the wall's OUTER
       face -- and it grows outward (-Y) like all other kit relief, so it snaps to
       a stone wall bay at (bay_x, 0, 0) with no offset (rotate it about Z to put
       it on a gable end). Seat for a stack on top at Z=H_GROUND, on the flue
-      axis Y=BR_AXIS, clear of the wall above.
+      axis Y=BR_AXIS, clear of the wall above. A breast climbing a gable WALL is
+      a different condition from a stack rising from a ridge and carries no roof
+      plane at all: nothing in the pitch fix touches it.
 """
 import bpy
 from math import radians, tan, cos, sin, pi
@@ -334,7 +369,55 @@ H_TALL  = 2.60
 CAP_H   = 0.74       # little roof cap (ref2)
 POT_H   = 0.68       # corbelled cap + pots (ref1)
 
-TANP    = tan(S.PITCH)
+# ------------------------------------------------------------- the field -----
+# THE PITCH THIS PIECE IS PLACED IN, NOT THE PITCH THE KIT AUTHORS AT.
+#
+# Every roof piece is drawn at S.PITCH (52 deg) so that any roof piece meets any
+# other; the assembler then stretches the whole roof WORLD in Z by
+# ZK = tan65/tan52 = 1.675, placing each roof piece at z*ZK with scale
+# (s, s, s*ZK). A CHIMNEY IS PLACED UNSTRETCHED (it is a prop, not a roof
+# piece), so every plane in this module that models THE ROOF has to be cut
+# against the field's 65 deg. Cutting them at 52 is what put a hard horizontal
+# cut line at the foot of every stack the assemblers place: the haunch was never
+# placed at all, the bare shaft was dropped ~1.5 m into the ridge instead, and
+# the shaft's own bottom course came out the shingles as six loose-looking
+# stones lying on the roof (measured on out/inn_example.blend, stack
+# SM_Chimney_Stack_2_6m_A.001 at x 17.71: 2280 px of shaft-on-shingle contact,
+# 821 of it a dead horizontal line).
+#
+# AUDIT, site by site, 2026-08-28. Every use of the pitch in this file:
+#   Z_ROOF                     roof height at the wedge's back        FIELD
+#   _y_roof(z)                 how far up-slope the roof has risen    FIELD
+#   base_roof: smax            slope run of the skirt's footprint     FIELD
+#   base_roof: _on_roof        a point on the roof plane              FIELD
+#   base_roof: flap rot (x2)   lead lying IN the roof plane           FIELD
+#   demo: run / ctx rotation   the demo's own context slope           FIELD
+#   demo: gable infill apex    must match that slope                  FIELD
+#   demo: z_roof(y)            where the demo's chimneys land         FIELD
+# ELEVEN sites, ALL of them the field. NOT ONE is the chimney's own geometry --
+# a chimney is plumb, its caps carry their own tapers, and the breast is a wall
+# piece with no roof plane in it -- so the fix is this definition and nothing
+# else. (dormers.py learned the other way round: an earlier round there patched
+# the single most obvious call site and left 21 others cutting at 52.)
+TANP    = S.TAN_F                       # 2.14451  tan(65), the field AS PLACED
+COS_F   = cos(S.PITCH_F)                # 0.42262
+SIN_F   = sin(S.PITCH_F)                # 0.90631
+PF_DEG  = S.PITCH_F_DEG                 # 65.0
+
+# ...AND THE ROOF IS NOT ITS OWN PLANE. roofs.py's shingle skin stands PROUD of
+# the nominal plane z = ridge - |dy|*tan65, because a course laps the one below
+# it. Measured by raycasting straight down onto out/inn_example.blend's main
+# roof at x 17.71, 17 samples from y 2.16 to 0.56 (the ridge cap's own two rows
+# excluded): the surface sits +0.091 to +0.190 m in Z above the nominal plane,
+# mean +0.154, i.e. +0.038..+0.080 measured PERPENDICULAR to the slope. That
+# 0.10 m band is one course's saw-tooth.
+#   The datum is the BOTTOM of that band, not the mean: a toe buried in the
+# shingles is invisible, a toe floating over them is the defect. So the piece's
+# own model of the roof surface is `nominal + ROOF_SKIN` with ROOF_SKIN at the
+# low end, and Z_SLIV below carries the rest of the band so the shoulder clears
+# the proudest course too.
+ROOF_SKIN = 0.095
+SKIN_BAND = 0.110       # ...and how far the skin's saw-tooth reaches above that
 
 # THE SAME NUMBER stone_walls and timber_walls pin, deliberately: _blotch reads
 # mathutils.noise, which is seeded PER BLENDER PROCESS, and this module never
@@ -348,18 +431,60 @@ TANP    = tan(S.PITCH)
 NOISE_SEED = 20240823
 
 # --- the base haunch. Measured off ref3: the shaft (~1.1m dressed) comes down
-# --- into a WEDGE half again as wide at its foot, battering in over ~1.6m of
-# --- slope, and the two meet at a cornice that oversails the shaft all round.
-BASE_TOE = 0.86      # stack axis -> down-slope toe of the wedge
-BASE_UP  = 0.44      # stack axis -> up-slope back of the wedge
+# --- into a WEDGE half again as wide at its foot, battering in over the slope,
+# --- and the two meet at a cornice that oversails the shaft all round.
+#
+# THE FOOTPRINT IS DERIVED FROM THE SHAFT NOW, NOT TUNED TO A PITCH. BASE_TOE and
+# BASE_UP are HORIZONTAL distances, and the wedge's height is tan(field) times
+# their sum -- so they are exactly the kind of number dormers.py's second defect
+# was: a length tuned to 52 deg that inverts its own profile at 65. At 52 a
+# 1.30 m footprint gave a 1.82 m shoulder; the SAME footprint at 65 gives 2.79
+# and a haunch taller than the shaft standing on it.
+#   Shrinking the footprint to keep the old height does not work either. The
+# floor is set by the SHAFT, not by taste: the wedge has to reach past the
+# shaft's own faces on both sides, and the shaft's proudest cobble stands at
+# HW + CROWN_MAX = 0.554. That forces
+#     BASE_TOE + BASE_UP >= 1.12  ->  Z_SH >= 2.60  ->  BASE_H >= 2.85
+# so ~2.85 is the SHORTEST haunch a 0.96 m shaft can have on a 65 deg roof, and
+# the old 2.07 was only ever reachable at 52. This is the same arithmetic that
+# makes the shaft/shingle intersection 2.34 m tall: the roof drops that far
+# across the chimney's own depth, and the haunch has to bridge it.
+#   What the pitch costs, and it is stated rather than hidden: the down-slope
+# face's batter drops from 9.9 to 7.1 deg per side in width and from 7.5 to
+# 4.2 deg in depth, because a batter needs horizontal room and 65 deg gives
+# none. BASE_TW stays at its measured 1.74 rather than growing to 2.00 to hold
+# the old batter -- 2.00 is wider than a 2 m wall bay and would break the
+# declared x envelope and collide with dormers.
+BASE_UP  = HW + .02  # 0.50  stack axis -> up-slope back of the wedge. The wedge
+                     # reaches the shaft's own up-slope face; the cornice's
+                     # 80 mm up-slope oversail then covers its proudest cobble
+                     # (0.554 < 0.50 + 0.08). At the old 0.44 the shaft's back
+                     # stones stood 34 mm past the cornice that crowns them.
+BASE_TOE = HW + .14  # 0.62  stack axis -> down-slope toe of the wedge. 75 mm
+                     # past the shaft's proudest cobble: every extra 10 mm here
+                     # costs 21 mm of haunch height at 65 deg.
 BASE_TW  = 1.74      # wedge width at the toe -- 1.6x the dressed shaft
 BASE_SW  = 1.10      # wedge width at the shoulder, the shaft's own width
-BASE_TT  = 0.62      # axis -> down-slope face AT the shoulder (so the face rakes)
-Z_ROOF   = TANP * (BASE_TOE + BASE_UP)   # roof plane height at the up-slope back
-Z_SH     = Z_ROOF + 0.16                 # shoulder: the sliver above the shingles
+BASE_TT  = BASE_TOE - .17   # 0.45  axis -> down-slope face AT the shoulder, so
+                     # the face rakes. Held above BASE_TT >= 0.397, which is
+                     # what puts the cornice's own nose (BASE_TT + 0.160) out
+                     # past the shaft's proudest cobble.
+Z_SLIV   = SKIN_BAND + .09   # 0.20  shoulder clearance above the piece's model
+                     # of the roof surface. SKIN_BAND covers the shingle course
+                     # saw-tooth, the 0.09 is the sliver that actually reads:
+                     # 0.09..0.20 in Z above the real shingles, 0.038..0.085
+                     # measured perpendicular, against 0.0985 perpendicular at
+                     # the authored 52 deg. Below SKIN_BAND the shingles come
+                     # through the cornice.
+Z_ROOF   = TANP * (BASE_TOE + BASE_UP)   # 2.4018  roof SURFACE height at the
+                                         # up-slope back, above the toe
+Z_SH     = Z_ROOF + Z_SLIV               # 2.6018  shoulder
 CORN_H   = 0.245                         # the two-course oversailing cornice
-BASE_H   = Z_SH + CORN_H                 # toe to seat
+BASE_H   = Z_SH + CORN_H                 # 2.8468  toe to seat
 BASE_W   = BASE_TW                       # legacy alias: the widest footprint
+# FOR THE ASSEMBLER: toe_z = ridge_z - TOE_DROP puts the wedge's back on the
+# ridge with its toe on the shingles, when the axis is at ridge_pos -+ BASE_UP.
+TOE_DROP = Z_ROOF - ROOF_SKIN            # 2.3068
 
 BR_W0, BR_W1 = 1.50, 1.06   # breast width at plinth top / at the collar
 BR_D0, BR_D1 = 0.98, 0.92   # breast projection at plinth top / at the collar
@@ -496,7 +621,9 @@ def _yf(z):
 
 
 def _y_roof(z):
-    """How far up-slope the roof plane has risen to height z."""
+    """How far up-slope the roof SURFACE has risen to height z, capped at the
+    wedge's back (which the contract puts on the ridge, where the roof stops
+    climbing). 65 deg -- see TANP: this is the FIELD, not the authored pitch."""
     return min(BASE_UP, z / TANP - BASE_TOE)
 
 
@@ -1749,12 +1876,26 @@ def _rubble(p, axis, sign, const, u_range, v_range, seed, course=.215, fine=.90,
                 seal=(wa or wb),
                 fill=fill, back=back + sunk)
 
+    # THE BITE IS TRIMMED AT THE PIECE'S OWN Z SEAM, NOT LEFT FOR finish() TO CUT.
+    # BITE_V exists so a butted course runs right up to the seam with no band of
+    # bare mortar (see BITE_V), and where the biting course IS the piece's top or
+    # bottom the overshoot used to be sheared off by Part.clamp_to_seams -- which
+    # gives the identical mesh, but reports it: 80/57/72/72/18 verts cut at 9-10
+    # mm on five of eight pieces, i.e. the family logging a 10 mm deformation on
+    # every build for something entirely deliberate. Trimmed here the seam is
+    # still flush, the interlock is unchanged, and `clamped` reads 0 so a real
+    # clamp -- the kind that flattened 173 dormer vertices onto a seam -- is
+    # visible the moment it happens. An INTERNAL bite (the ashlar shaft's upper
+    # field biting 10 mm down into its string course) is untouched: it is nowhere
+    # near a seam, so the min/max does nothing to it.
+    zlim = getattr(p, "seams", None) or {}
+    z_lo_lim, z_hi_lim = zlim.get('z', (-1e9, 1e9))
     blocked = []                 # u-runs a through-stone is standing in
     for k, (zb, zt) in enumerate(rows):
         h = zt - zb
         nxt = rows[k + 1] if k + 1 < n_row else None
-        v_lo = zb - BITE_V if (k == 0 and butt[0]) else zb + joint * .5
-        v_hi = zt + BITE_V if (k == n_row - 1 and butt[1]) else zt - joint * .5
+        v_lo = max(zb - BITE_V, z_lo_lim) if (k == 0 and butt[0]) else zb + joint * .5
+        v_hi = min(zt + BITE_V, z_hi_lim) if (k == n_row - 1 and butt[1]) else zt - joint * .5
         # ---- who owns each arris on this course. Both faces meeting at a
         #      corner read the SAME list (built in _dress), so exactly one of
         #      them turns it: never two, which would share the corner volume,
@@ -1834,7 +1975,8 @@ def _rubble(p, axis, sign, const, u_range, v_range, seed, course=.215, fine=.90,
                 if (nxt and not (wa or wb) and ub - ua > h * .74
                         and ua - lo > .10 and hi - ub > .10
                         and r.random() < thru):
-                    top = nxt[1] + BITE_V if (k + 1 == n_row - 1 and butt[1]) \
+                    top = min(nxt[1] + BITE_V, z_hi_lim) \
+                        if (k + 1 == n_row - 1 and butt[1]) \
                         else nxt[1] - joint * .5
                     emit(ua, ub, v_lo, top, prom=1.06, j_lo=k, j_hi=k + 2)
                     blocked_next.append((e[i], e[i + 1]))
@@ -2291,34 +2433,53 @@ def cap_pots():
 
 # --------------------------------------------------------------------- base ---
 def base_roof():
-    """The HAUNCH where a stack punches through a 52 deg roof -- the piece that
-    stops a chimney reading as a fence post stuck through the shingles.
+    """The HAUNCH where a stack punches through the roof -- the piece that stops a
+    chimney reading as a fence post stuck through the shingles, and the only lead
+    flashing the kit has.
+
+    THE ROOF IS THE FIELD'S 65 DEG, NOT THE KIT'S AUTHORED 52 (see TANP). A
+    chimney is placed unstretched into a roof world that has been stretched in Z,
+    so a haunch cut for 52 has an underside 0.74 m too shallow: the wedge stands
+    off the shingles, its shoulder lands below the roof surface, and the piece
+    was simply never placed -- both assemblers dropped the bare shaft into the
+    ridge instead and got a hard horizontal cut line with six loose-looking
+    stones lying on the roof below it.
 
     Both references build it the same way and it is all about width: the shaft
     comes down, meets a cornice that OVERSAILS it on every side, and below that
     the masonry spreads into a battered wedge half again as wide as the shaft at
-    its foot, riding ~1.9m of slope down to a toe. Nothing about it is the same
+    its foot, riding 2.65 m of slope down to a toe. Nothing about it is the same
     width as the shaft.
 
-    Z=0 is the down-slope toe, local +Y is up-slope, the stack axis is (0, 0).
-    The core is stepped so its underside stays inside the roof plane everywhere.
+    Z=0 is the down-slope toe ON THE SHINGLE SURFACE (not on the nominal plane --
+    see ROOF_SKIN), local +Y is up-slope, the stack axis is (0, 0). The core is
+    stepped so its underside stays inside the roof surface everywhere.
     """
     p = Part("SM_Chimney_Base_Roof", budget="chimney",
-             seams=dict(x=(-0.95, 0.95), y=(-0.96, 0.58), z=(0, BASE_H)))
+             seams=dict(x=(-0.96, 0.96), y=(-0.74, 0.62), z=(0, BASE_H)))
     r = rng("ch/base")
 
     # ---- battered core: stepped up the slope, tapering in as it climbs -------
-    n = 9
+    # THE STEP COUNT IS DERIVED. At 52 deg nine steps over a 1.82 m shoulder gave
+    # 0.203 m treads; the same nine over 65 deg's 2.60 m gives 0.289, and the
+    # tread is what decides how far each step's back corner floats clear of the
+    # shingles before the step above buries it.
+    n = max(6, int(round(Z_SH / .203)))          # 13
     dz = Z_SH / n
     for i in range(n):
         z0, z1 = i * dz, (i + 1) * dz
-        y_up = _y_roof(z1)                       # roof plane at the step's top
+        y_up = _y_roof(z1)                       # roof surface at the step's top
         if y_up < -BASE_TOE + .06:
             continue
         yf = (_yf(z0) + _yf(z1)) / 2             # raking down-slope face
         hw0, hw1 = _hw(z0), _hw(z1)
-        _bx(p, (0, (y_up + yf) / 2, (z0 + z1) / 2),
-            (2 * hw0, y_up - yf, dz * 1.06), "stone", bevel=.015, seg=1,
+        # the 6% overlap between steps runs UPWARD only on the bottom one: at
+        # i=0 it used to push the box 0.006 m under Z=0 and finish() sheared it
+        # flat, which is the whole of this piece's old clamp report.
+        zb0 = z0 - (dz * .03 if i else 0.0)
+        zb1 = z1 + dz * .03
+        _bx(p, (0, (y_up + yf) / 2, (zb0 + zb1) / 2),
+            (2 * hw0, y_up - yf, zb1 - zb0), "stone", bevel=.015, seg=1,
             taper=hw1 / hw0, taper_axis='X', tint=.06,
             shade=.90 + r.uniform(-.04, .04))
 
@@ -2337,7 +2498,12 @@ def base_roof():
     # are locked together (one band, two courses on the down-slope face), so a
     # finer course means one more band or the wedge stops matching the shaft
     # landing on it.
-    nb = 8
+    # ...AND THE COUNT IS DERIVED NOW, for the same reason the step count is: the
+    # band height is Z_SH/nb, and Z_SH is a function of the pitch. Eight bands
+    # over 65 deg's 2.60 m shoulder would be 0.325 m each -- back to the coarsest
+    # masonry in the family, at eye level on the roof. 0.228 is the band height
+    # eight gave at 52 deg, so hold that and take however many bands it needs.
+    nb = max(6, int(round(Z_SH / .228)))         # 11
     for b in range(nb):
         z0, z1 = Z_SH * b / nb, Z_SH * (b + 1) / nb
         zm = (z0 + z1) / 2
@@ -2349,8 +2515,9 @@ def base_roof():
         # at eye level on the roof.
         _rubble(p, 'Y', -1, _yf(zm), (-hw + ARR, hw - ARR), (z0 + .006, z1 - .006),
                 61 + b, course=.205, fine=1.0, depth=.052, big=.20,
-                split=.20, thru=.12, closer=.20, dark=.055 - .010 * b,
-                pale=.05 + .012 * b, wide=1.32)
+                split=.20, thru=.12, closer=.20,
+                dark=.055 - .080 * b / nb,
+                pale=.05 + .096 * b / nb, wide=1.32)
         # the two raking sides: only what stands clear of the shingles
         for sg in (-1, 1):
             u_hi = _y_roof(z0) - .04
@@ -2359,7 +2526,8 @@ def base_roof():
             _rubble(p, 'X', sg, sg * hw, (_yf(zm) + .05, u_hi), (z0 + .006, z1 - .006),
                     70 + b * 3 + int(sg), course=.205, fine=1.0,
                     depth=.046, big=.16, split=.16, thru=.10, closer=.18,
-                    dark=.055 - .010 * b, pale=.05 + .012 * b, wide=1.36)
+                    dark=.055 - .080 * b / nb,
+                    pale=.05 + .096 * b / nb, wide=1.36)
 
     # ---- cornice: two oversailing courses. That shadow line, right where the
     #      shaft lands on the wedge, is the hardest mark ref3 draws ------------
@@ -2400,14 +2568,38 @@ def base_roof():
     #      parking it on top, and it buries the stepped notches of the core.
     #      (A ladder of upright soaker tabs reads as a fire escape; neither
     #      reference has one.)
-    smax = (BASE_TOE + BASE_UP) / cos(S.PITCH)      # slope run of the footprint
+    #      65 DEG, EVERY TERM. The skirt IS this kit's chimney flashing -- there
+    #      is no separate flashing piece -- so cutting it at the authored 52 is
+    #      not a cosmetic error: the flaps come out 22.7 deg off the shingles
+    #      they are supposed to lie on, which lifts the up-slope end of a 0.88 m
+    #      flap 0.34 m clear of the roof and drives its down-slope end the same
+    #      distance in. That is the whole reason the assembler's docstring calls
+    #      the skirt something to keep "buried in the steeper one".
+    smax = (BASE_TOE + BASE_UP) / COS_F      # 2.6502  slope run of the footprint
     def _on_roof(s, lift):
-        """A point `s` along the slope from the toe, `lift` clear of the plane."""
-        return (-BASE_TOE + s * cos(S.PITCH) - lift * sin(S.PITCH),
-                s * sin(S.PITCH) + lift * cos(S.PITCH))
+        """A point `s` along the slope from the toe, `lift` clear of the SHINGLE
+        SURFACE (which is where Z=0 sits -- see ROOF_SKIN)."""
+        return (-BASE_TOE + s * COS_F - lift * SIN_F,
+                s * SIN_F + lift * COS_F)
+    # THE SKIRT HAS TO SPAN THE SHINGLE BAND, NOT LIE ON A PLANE, AND THIS WAS
+    # MEASURED OFF A RENDER, not reasoned. First cut of the 65 deg fix kept the
+    # old 40 mm plate at a 0.050 lift; rendered on the inn's east ridge stack the
+    # skirt was INVISIBLE -- not one dark pixel either side of the haunch. Why:
+    # Z=0 is pinned to the BOTTOM of the shingle band (see ROOF_SKIN) so a toe
+    # never floats, which means the real shingle surface runs 0 to SKIN_BAND
+    # (0.110 in Z, 0.046 measured perpendicular) ABOVE the piece's model of it,
+    # and a 40 mm flap 30 mm up is simply inside the tabs.
+    #   So the flap is a SECTION that crosses the whole band: 85 mm thick,
+    # centred 52 mm off the model surface. Underside 9 mm above the model, i.e.
+    # 30 mm bedded into the proudest course and 9 mm proud of the shallowest --
+    # never floating; top 95 mm off the model, i.e. 49-95 mm clear of the
+    # shingles, which is a lead soaker you can see. Chunky, and the kit is
+    # "chunky readable forms": a lead apron dressed over shingle tabs does stand
+    # up off them.
+    LIFT, LEAD_T = .052, .085
     for k in range(3):
         s0, s1 = smax * k / 3, smax * (k + 1) / 3
-        ym, zm = _on_roof((s0 + s1) / 2, .050)
+        ym, zm = _on_roof((s0 + s1) / 2, LIFT)
         hw = _hw(min(zm, Z_SH))
         # ONE world-space offset for both flaps of a course, not one each: a
         # mirrored pair of plates has both members the same distance from the
@@ -2418,19 +2610,30 @@ def base_roof():
         fx, fy = _lay(f"flap/{k}", amp=.0050)
         for sg in (-1, 1):
             p.plate((sg * (hw + .052) + fx, ym + fy, zm),
-                    (.150, (s1 - s0) * .98, .040),
+                    (.150, (s1 - s0) * .98, LEAD_T),
                     "stone_dark", tint=.04, shade=.56,
-                    rot=(S.PITCH_DEG, 0, 0))
-    # the apron is CENTRED 0.17 up the slope, not 0.012: a 0.30 flap centred on
-    # the toe hangs half its length off the end of the roof plane, below Z=0,
-    # where the seam clamp then shears it flat
-    ya, za = _on_roof(.170, .050)
-    # ...and it stops 20mm short of the raking flaps' inner edge (x 0.793) rather
-    # than running under them: two lead flaps in the SAME plane of the roof, one
-    # lying over the other, is 760 cm2 of z-fighting on the roof surface itself
+                    rot=(PF_DEG, 0, 0))
+    # THE APRON HAS TO COVER THE TOE, AND ITS LENGTH IS WHAT DECIDES THAT.
+    # It used to be 0.30 long centred 0.170 up the slope, i.e. starting 0.020
+    # PAST the toe with the toe's own bottom arris left looking for the shingles.
+    # Length 0.340 centred 0.170 puts its down-slope edge EXACTLY on the toe
+    # (s = 0) and its lowest vertex at world z = (LIFT - LEAD_T/2) * cos65 =
+    # +0.0040, so the seam clamp never sees it. Measured the hard way: at 0.335
+    # centred 0.155 the corner lands at -0.0075 and finish() shears six verts
+    # flat -- rotating a plate about X tilts its half-THICKNESS into z as well as
+    # its half-length, and the first cut of this fix forgot the second term.
+    ya, za = _on_roof(.170, LIFT)
+    # ...and it stops 20mm short of the raking flaps' inner edge rather than
+    # running under them: two lead flaps in the SAME plane of the roof, one lying
+    # over the other, is 760 cm2 of z-fighting on the roof surface itself. The
+    # flaps' inner edge is at _hw(z of flap 0) + 0.052 - 0.075, so the width is
+    # derived from the wedge rather than left at the old literal 1.55, which was
+    # measured against a 0.86 toe.
+    _, z_f0 = _on_roof(smax / 6, LIFT)
+    ap_w = 2 * (_hw(min(z_f0, Z_SH)) + .052 - .075 - .020)
     ax_, _ = _lay("apron", amp=.0050)
-    p.plate((ax_, ya, za), (1.55, .30, .042), "stone_dark", tint=.04,
-            shade=.56, rot=(S.PITCH_DEG, 0, 0))
+    p.plate((ax_, ya, za), (ap_w, .340, LEAD_T), "stone_dark", tint=.04,
+            shade=.56, rot=(PF_DEG, 0, 0))
     p.wobble(.0012, freq=2.0)
     return p.finish()
 
@@ -2654,8 +2857,16 @@ def demo():
         return o
 
     # ---------------- context: the corner of a building ---------------------
-    z_eave, z_ridge = 2.90, 5.60
-    run = (z_ridge - z_eave) / TANP          # horizontal run of one slope
+    # THE DEMO ROOF IS THE FIELD'S 65 DEG. It used to be built at S.PITCH, which
+    # made this shot the one place in the project where the haunch looked right --
+    # a demo that agrees with the piece and disagrees with every building the kit
+    # makes is worse than no demo. `run` is held at the old 2.11 m half-span
+    # (a 4.2 m deep building) and the RIDGE is derived from it, rather than the
+    # other way round: deriving the run from a fixed 5.60 ridge at 65 deg gives a
+    # 2.5 m deep building.
+    z_eave = 2.90
+    run = 2.11                               # horizontal run of one slope
+    z_ridge = z_eave + run * TANP            # 7.425
     run_s = (run ** 2 + (z_ridge - z_eave) ** 2) ** .5
     x0, x1 = -4.7, 2.7                       # gable ends
     cx = (x0 + x1) / 2
@@ -2666,7 +2877,7 @@ def demo():
         m = Matrix.Translation((cx, sg * run, z_eave))
         if sg > 0:
             m = m @ Matrix.Rotation(radians(180), 4, 'Z')
-        sl.transform(m @ Matrix.Rotation(S.PITCH, 4, 'X'))
+        sl.transform(m @ Matrix.Rotation(S.PITCH_F, 4, 'X'))
         out.append(sl.finish())
 
     ctx = Part("DEMO_Context")
@@ -2679,28 +2890,35 @@ def demo():
     for sg in (-1, 1):
         _bx(ctx, (cx, sg * wy, S.H_GROUND / 2), (x1 - x0, .34, S.H_GROUND),
             "stone", bevel=.02, tint=.07)
-    _bx(ctx, (x1 - .17, 0, S.H_GROUND / 2), (.34, 2 * wy, S.H_GROUND), "stone",
-        bevel=.02, tint=.07)
-    _bx(ctx, (x0 + .17, 0, S.H_GROUND / 2), (.34, 2 * wy, S.H_GROUND), "stone",
-        bevel=.02, tint=.07)
-    # gable infill triangles up to the ridge
+    # the gable-end walls climb to where the roof actually crosses them, and the
+    # infill triangle starts there. At 52 deg the single triangle sprang straight
+    # off the wall head and fell 0.54 m short of the ridge; at 65 deg the same
+    # arithmetic misses by 0.97, which is a hole under the ridge on both ends.
+    z_gb = z_ridge - wy * TANP - S.H_GROUND       # roof height above the wall head
     for x in (x0 + .17, x1 - .17):
+        _bx(ctx, (x, 0, (S.H_GROUND + z_gb) / 2), (.34, 2 * wy, S.H_GROUND + z_gb),
+            "stone", bevel=.02, tint=.07)
         _pr(ctx, [(-wy, 0), (wy, 0), (0, wy * TANP)], .34, "plaster_dim",
-            axis='X', at=(x, 0, S.H_GROUND), bevel=.02, tint=.05)
+            axis='X', at=(x, 0, S.H_GROUND + z_gb), bevel=.02, tint=.05)
     _ctx_shade(ctx, .72)
     out.append(ctx.finish())
 
-    z_roof = lambda y: z_ridge - TANP * abs(y)
+    # the SHINGLE SURFACE, not the nominal plane -- what a toe actually lands on.
+    # The context slope's tabs are 0.040 thick, so its skin in Z is 0.040/cos65 =
+    # 0.095, which is ROOF_SKIN: the same number roofs.py measures out at.
+    z_roof = lambda y: z_ridge - TANP * abs(y) + ROOF_SKIN
 
     # ---------------- hero: base + tall stack + little roof cap -------------
-    hx, hy = -0.45, -0.72
+    # THE CONTRACT: axis BASE_UP down-slope of the ridge, so the wedge's back
+    # lands on the ridge line and its whole stepped underside is on one slope.
+    hx, hy = -0.45, -BASE_UP
     toe = z_roof(hy - BASE_TOE)
     place("SM_Chimney_Base_Roof", (hx, hy, toe))
     place("SM_Chimney_Stack_2_6m_A", (hx, hy, toe + BASE_H))
     place("SM_Chimney_Cap_Roof", (hx, hy, toe + BASE_H + H_TALL))
 
     # ---------------- second stack: further down the slope, potted ----------
-    sx, sy = -3.30, -0.92
+    sx, sy = -3.30, -1.06
     toe2 = z_roof(sy - BASE_TOE)
     place("SM_Chimney_Base_Roof", (sx, sy, toe2))
     place("SM_Chimney_Stack_1_6m_A", (sx, sy, toe2 + BASE_H))

@@ -2145,15 +2145,57 @@ def roof_drift(blk, sgn, along, up, n=12, sc=0.82, spread=(1.5, 0.75), seed=0):
             scale=(s, s * r.uniform(.85, 1.2), s * r.uniform(.16, 0.30)))
 
 
-def chimney(x, y, z_foot, kz=1.40, var="A"):
-    """Stone stack rising from a ridge.  The references' chimneys are tall and
-    slim, so the stack is stretched rather than doubled -- a second stacked
-    section would hang its lead skirt out in mid-air above the roof -- and the
+def chimney(blk, along, kz=1.40, var="A", far=False, at=None):
+    """Stone stack rising from a ridge, ON ITS OWN HAUNCH.
+
+    The references' chimneys are tall and slim, so the stack is stretched rather
+    than doubled -- a second stacked section would hang its lead skirt out in
+    mid-air above the roof.
+
+    WHAT THIS USED TO DO, and why it was wrong: it placed the stack and the pots
+    and NOTHING ELSE. SM_Chimney_Base_Roof and SM_Chimney_Cap_Roof were placed
+    zero times across all 8 stacks on 4 buildings, and this docstring said "the
     foot sits ~1 m under the ridge so the skirt, authored to lie in a 52 deg
-    roof, stays buried in the steeper one."""
-    put(P(f"SM_Chimney_Stack_2_6m_{var}"), (x, y, z_foot), 0.0,
+    roof, stays buried in the steeper one". That burial was a WORKAROUND for a
+    piece cut at the wrong pitch, and what it bought was a hard horizontal line
+    across the shaft -- measured at world z 13.2084-13.2328 on the east stack,
+    with the bottom courses' cobbles poking out of the shingle band below it and
+    reading as loose stones lying on the roof. 2,280 px of shaft-against-roof
+    edge and 10,801 px of that fringe, on a tight camera.
+
+    chimneys.py now cuts its roof plane at the PRESENTED pitch, so the haunch
+    works and the burial is deleted: with the haunch placed, the stack's foot
+    sits 1.48 m clear of the roof surface at its own axis.
+
+    TWO THINGS THE PIECE AUTHOR MEASURED THAT THIS RELIES ON. First, the toe
+    lands on the SHINGLE SURFACE, not on the nominal plane -- roofs.py's skin
+    stands 0.091-0.190 m in z above `zsurf()` (0.038-0.080 perpendicular), so
+    TOE_DROP is pinned to the BOTTOM of that band and a toe buries rather than
+    floats. Second, the ridge cap needs no suppressing: the cornice reaches only
+    ridge_pos - 0.42, clear of the cap's ridge_pos +/- 0.19 band, and the stack
+    foot clears the cap top by 0.086 m, so the cap passes behind and reads as
+    the ridge continuing. Do NOT nudge the axis further down-slope to tidy that
+    -- at ridge_pos - BASE_UP - 0.16 the cap comes out THROUGH the shaft.
+
+    `along` is the coordinate along the block's ridge. `far` puts it on the other
+    slope. `at` places one anywhere on a slope instead of on a ridge.
+    """
+    from kit.pieces import chimneys as CH
+    if at is not None:
+        ax, ay = at
+        across = ay if blk.axis == 'X' else ax
+        sgn = 1.0 if across > blk.ridge_pos else -1.0
+        d = across + sgn * CH.BASE_TOE          # the toe, down-slope of the axis
+        surf = blk.zsurf(ax, d) if blk.axis == 'X' else blk.zsurf(d, ay)
+        toe, rz = surf * ZK + CH.ROOF_SKIN, (180.0 if sgn > 0 else 0.0)
+    else:
+        off = blk.ridge_pos + (CH.BASE_UP if far else -CH.BASE_UP)
+        ax, ay = (along, off) if blk.axis == 'X' else (off, along)
+        toe, rz = blk.ridge - CH.TOE_DROP, (180.0 if far else 0.0)
+    put(P("SM_Chimney_Base_Roof"), (ax, ay, toe), rz)
+    put(P(f"SM_Chimney_Stack_2_6m_{var}"), (ax, ay, toe + CH.BASE_H), rz,
         scale=(1, 1, kz))
-    put(P("SM_Chimney_Cap_Pots"), (x, y, z_foot + 2.60 * kz), 0.0)
+    put(P("SM_Chimney_Cap_Pots"), (ax, ay, toe + CH.BASE_H + 2.60 * kz), rz)
 
 
 # --------------------------------------------------------------- the inn -----
@@ -2374,9 +2416,9 @@ def build_inn():
     # Both paintings stack their chimneys on the flank of the hero gable, tall
     # and slim, one of them rising nearly to the apex.
     cx = HERO.ridge_pos - 1.15
-    chimney(cx, 1.05, HERO.zsurf(cx, 1.05) * ZK - 1.55, 1.15, "B")
-    chimney(MB[1] + 0.55, MAIN.ridge_pos, MAIN.ridge - 1.50, 1.10, "C")
-    chimney(MB[8] + 0.35, MAIN.ridge_pos, MAIN.ridge - 1.55, 0.90, "A")
+    chimney(HERO, cx, 1.15, "B", at=(cx, 1.05))
+    chimney(MAIN, MB[1] + 0.55, 1.10, "C")
+    chimney(MAIN, MB[8] + 0.35, 0.90, "A")
 
     # ================================================== LEAN-TO AWNING ======
     # ref3's working end: a flat pent awning on posts against the range's west

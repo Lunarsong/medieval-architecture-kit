@@ -621,25 +621,25 @@
   {
    "family": "chimneys",
    "name": "SM_Chimney_Stack_1_6m_A",
-   "tris": 1831,
+   "tris": 1854,
    "report": []
   },
   {
    "family": "chimneys",
    "name": "SM_Chimney_Stack_2_6m_A",
-   "tris": 2837,
+   "tris": 2816,
    "report": []
   },
   {
    "family": "chimneys",
    "name": "SM_Chimney_Stack_2_6m_B",
-   "tris": 2568,
+   "tris": 2531,
    "report": []
   },
   {
    "family": "chimneys",
    "name": "SM_Chimney_Stack_2_6m_C",
-   "tris": 2734,
+   "tris": 2726,
    "report": []
   },
   {
@@ -657,7 +657,7 @@
   {
    "family": "chimneys",
    "name": "SM_Chimney_Base_Roof",
-   "tris": 1383,
+   "tris": 1789,
    "report": []
   },
   {
@@ -1105,6 +1105,6 @@
    "report": []
   }
  ],
- "total_tris": 275921,
+ "total_tris": 276284,
  "families_missing": []
 }
