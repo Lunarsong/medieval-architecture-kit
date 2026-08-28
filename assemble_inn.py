@@ -2382,7 +2382,25 @@ def build_inn():
     # ref3's working end: a flat pent awning on posts against the range's west
     # front wall, the barrel yard under it.  Roof slope tiles rotated about X
     # from 52 down to 14 degrees; nothing modelled.
-    LT_A = 14.0
+    # 14 -> 26 DEGREES. At 14 the awning's shingle surface measured 9.77 deg
+    # (area-weighted mean normal, uniform scale so the number is direct) with 39%
+    # of its area under 10 deg -- and SHINGLES CANNOT SHED WATER THERE. Riven oak
+    # wants ~18-20 deg before water tracks back under the laps, and this kit's own
+    # shallowest shingled surface is the bell-cast eave at 38.93 deg. Shanee asked
+    # the right question -- "is the existing one valid or architectural error?" --
+    # and it was an error: from a standing eye at 1.70 m the top reads as a flat
+    # grey mat with none of the relief the rest of the roof shows. The reference's
+    # own lean-to (r6, the stable range) is shingled with visible courses and
+    # clearly pitched, shallower than its main roof but nowhere near flat.
+    #
+    # 26 is the ANGLE, not a taste: the high edge is z0 + SLOPE_SEG*sin(LT_A) and
+    # it must stay under the stone storey head at BASE + H_GROUND = 3.45. At 28 it
+    # lands at 3.441 -- 9 mm, inside this family's own +/-5 mm wobble. At 26 it
+    # lands at 3.391, 59 mm clear, and the surface comes out ~22 deg.
+    #
+    # Everything else here is derived from LT_A -- panel rotation, plan depth, the
+    # front beam and both post heights -- so this constant is the whole change.
+    LT_A = 26.0
     LT_RX = -(S.PITCH_DEG - LT_A)
     dy = S.SLOPE_SEG * cos(radians(LT_A))
     dz = S.SLOPE_SEG * sin(radians(LT_A))
